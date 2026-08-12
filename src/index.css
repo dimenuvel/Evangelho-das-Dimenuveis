@@ -1,0 +1,320 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/* DAYTIME SOLAR MODE OVERRIDES ([data-theme="day"] / .day-mode)              */
+/* -------------------------------------------------------------------------- */
+
+[data-theme="day"],
+.day-mode {
+  color-scheme: light;
+}
+
+/* Document Body Background & Base Typography */
+[data-theme="day"] body {
+  background-color: #f8f5ee !important;
+  color: #292524 !important;
+}
+
+/* Headers & Navigation Bars */
+[data-theme="day"] header {
+  background-color: rgba(250, 247, 240, 0.94) !important;
+  border-bottom-color: rgba(184, 145, 61, 0.35) !important;
+}
+
+[data-theme="day"] #mobile-nav {
+  background-color: rgba(250, 247, 240, 0.96) !important;
+  border-top-color: rgba(184, 145, 61, 0.35) !important;
+}
+
+/* Footer Styling */
+[data-theme="day"] footer {
+  background-color: #f2ece1 !important;
+  border-top-color: rgba(184, 145, 61, 0.25) !important;
+  color: #57534e !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* GRADIENT CARD OVERRIDES IN DAY MODE                                       */
+/* Convert dark background gradients to light parchment/amber gradients       */
+/* -------------------------------------------------------------------------- */
+
+[data-theme="day"] .bg-gradient-to-br,
+[data-theme="day"] .bg-gradient-to-r,
+[data-theme="day"] .bg-gradient-to-t,
+[data-theme="day"] .bg-gradient-to-b {
+  /* Default dark cards gradient override */
+  background-image: linear-gradient(to bottom right, #ffffff, #fbf7ef, #f2e8d5) !important;
+}
+
+/* Preserve Golden / Amber CTA Action Buttons (from-[#c5a059] to-[#e5c158], etc.) */
+[data-theme="day"] button.bg-gradient-to-r.from-\[\#c5a059\],
+[data-theme="day"] button.bg-gradient-to-r.from-amber-500,
+[data-theme="day"] a.bg-gradient-to-r.from-\[\#c5a059\],
+[data-theme="day"] .bg-gradient-to-r.from-\[\#c5a059\].to-\[\#e5c158\],
+[data-theme="day"] button.from-\[\#c5a059\] {
+  background-image: linear-gradient(to right, #d4af37, #f3e3a2) !important;
+  color: #000000 !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* BACKGROUND COLOR OVERRIDES IN DAY MODE                                    */
+/* Convert all dark blues/blacks/purples to warm ivory/white panels         */
+/* -------------------------------------------------------------------------- */
+
+[data-theme="day"] .bg-\[\#07090e\],
+[data-theme="day"] .bg-\[\#0a0e1a\],
+[data-theme="day"] .bg-\[\#0b0f19\],
+[data-theme="day"] .bg-\[\#0d1220\],
+[data-theme="day"] .bg-\[\#05070a\],
+[data-theme="day"] .bg-\[\#080a10\],
+[data-theme="day"] .bg-\[\#070a14\],
+[data-theme="day"] .bg-\[\#0c101c\],
+[data-theme="day"] .bg-\[\#0e1424\],
+[data-theme="day"] .bg-\[\#101626\],
+[data-theme="day"] .bg-\[\#101726\],
+[data-theme="day"] .bg-\[\#121826\],
+[data-theme="day"] .bg-\[\#141b2e\],
+[data-theme="day"] .bg-\[\#161d2e\],
+[data-theme="day"] .bg-\[\#090d17\],
+[data-theme="day"] .bg-\[\#1c130b\],
+[data-theme="day"] .bg-\[\#18130a\],
+[data-theme="day"] .bg-\[\#1c0d11\],
+[data-theme="day"] .bg-\[\#111728\],
+[data-theme="day"] .bg-\[\#0f1524\],
+[data-theme="day"] .bg-\[\#101524\],
+[data-theme="day"] .bg-neutral-900,
+[data-theme="day"] .bg-neutral-950,
+[data-theme="day"] .bg-neutral-800 {
+  background-color: #ffffff !important;
+  border-color: rgba(184, 145, 61, 0.3) !important;
+  color: #292524 !important;
+}
+
+/* Semi-transparent dark overlays on cards */
+[data-theme="day"] .bg-\[\#07090e\]\/80,
+[data-theme="day"] .bg-\[\#07090e\]\/60,
+[data-theme="day"] .bg-\[\#0a0e1a\]\/90,
+[data-theme="day"] .bg-\[\#0a0e1a\]\/80,
+[data-theme="day"] .bg-\[\#121826\]\/70,
+[data-theme="day"] .bg-neutral-800\/80,
+[data-theme="day"] .bg-neutral-900\/80 {
+  background-color: rgba(253, 251, 247, 0.95) !important;
+  border-color: rgba(184, 145, 61, 0.3) !important;
+}
+
+/* Status Badges in Day Mode */
+[data-theme="day"] .bg-emerald-950\/80,
+[data-theme="day"] .bg-emerald-950\/50,
+[data-theme="day"] .bg-emerald-950\/40,
+[data-theme="day"] .bg-emerald-950 {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #6ee7b7 !important;
+}
+
+[data-theme="day"] .bg-amber-950\/80,
+[data-theme="day"] .bg-amber-950\/50,
+[data-theme="day"] .bg-amber-950 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fde68a !important;
+}
+
+[data-theme="day"] .bg-indigo-950\/50,
+[data-theme="day"] .bg-indigo-950 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #a5b4fc !important;
+}
+
+[data-theme="day"] .bg-red-950\/80,
+[data-theme="day"] .bg-red-950\/60,
+[data-theme="day"] .bg-red-950\/50,
+[data-theme="day"] .bg-red-950\/40,
+[data-theme="day"] .bg-red-950\/30,
+[data-theme="day"] .bg-red-950 {
+  background-color: #fef2f2 !important;
+  color: #991b1b !important;
+  border-color: #fca5a5 !important;
+}
+
+/* Input Fields & Textareas */
+[data-theme="day"] input,
+[data-theme="day"] textarea,
+[data-theme="day"] select {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  border-color: rgba(184, 145, 61, 0.4) !important;
+}
+
+[data-theme="day"] input::placeholder,
+[data-theme="day"] textarea::placeholder {
+  color: #78716c !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* TYPOGRAPHY & TEXT CONTRAST IN DAY MODE                                   */
+/* -------------------------------------------------------------------------- */
+
+/* Bright gold / yellow text -> Rich warm brown / dark amber */
+[data-theme="day"] .text-\[\#f3e3a2\],
+[data-theme="day"] .text-\[\#f5e6b3\],
+[data-theme="day"] .text-\[\#f8f1d7\],
+[data-theme="day"] .text-\[\#fdf2d0\],
+[data-theme="day"] .text-amber-100,
+[data-theme="day"] .text-amber-100\/90,
+[data-theme="day"] .text-amber-200,
+[data-theme="day"] .text-amber-300 {
+  color: #78350f !important;
+}
+
+/* Gold headers / accents */
+[data-theme="day"] .text-\[\#c5a059\] {
+  color: #92400e !important;
+}
+
+/* High Contrast Headings & Body Text in Day Mode */
+[data-theme="day"] .text-white,
+[data-theme="day"] .text-neutral-100,
+[data-theme="day"] .text-neutral-200,
+[data-theme="day"] .text-\[\#e0ded7\] {
+  color: #1c1917 !important;
+}
+
+[data-theme="day"] .text-neutral-300 {
+  color: #292524 !important;
+}
+
+[data-theme="day"] .text-neutral-400 {
+  color: #44403c !important;
+}
+
+[data-theme="day"] .text-neutral-500 {
+  color: #57534e !important;
+}
+
+/* Category Specific Colors in Day Mode */
+[data-theme="day"] .text-purple-300,
+[data-theme="day"] .text-purple-400 {
+  color: #6b21a8 !important;
+}
+
+[data-theme="day"] .text-blue-300,
+[data-theme="day"] .text-blue-400 {
+  color: #1e40af !important;
+}
+
+[data-theme="day"] .text-emerald-200,
+[data-theme="day"] .text-emerald-300,
+[data-theme="day"] .text-emerald-400,
+[data-theme="day"] .text-emerald-500 {
+  color: #15803d !important;
+}
+
+[data-theme="day"] .text-red-200,
+[data-theme="day"] .text-red-300,
+[data-theme="day"] .text-red-400,
+[data-theme="day"] .text-red-500 {
+  color: #b91c1c !important;
+}
+
+/* Border Overrides */
+[data-theme="day"] .border-neutral-800,
+[data-theme="day"] .border-neutral-700,
+[data-theme="day"] .border-neutral-900,
+[data-theme="day"] .border-neutral-800\/80,
+[data-theme="day"] .border-neutral-700\/80 {
+  border-color: rgba(184, 145, 61, 0.28) !important;
+}
+
+[data-theme="day"] .border-red-800\/80,
+[data-theme="day"] .border-red-800,
+[data-theme="day"] .border-red-900,
+[data-theme="day"] .border-red-500\/50,
+[data-theme="day"] .border-red-500 {
+  border-color: #fca5a5 !important;
+}
+
+/* Hover & Interactive States */
+[data-theme="day"] .hover\:bg-neutral-800:hover,
+[data-theme="day"] .hover\:bg-neutral-900:hover,
+[data-theme="day"] .hover\:bg-\[\#111728\]:hover,
+[data-theme="day"] .hover\:bg-\[\#101522\]:hover,
+[data-theme="day"] .hover\:bg-\[\#101524\]:hover,
+[data-theme="day"] .hover\:bg-\[\#0f1524\]:hover {
+  background-color: #f3ede0 !important;
+}
+
+/* Modals & Overlays */
+[data-theme="day"] .bg-black\/85,
+[data-theme="day"] .bg-black\/80,
+[data-theme="day"] .bg-black\/70 {
+  background-color: rgba(248, 245, 238, 0.92) !important;
+}
+
+/* Progress bar container track */
+[data-theme="day"] .bg-neutral-800.h-2,
+[data-theme="day"] .bg-neutral-800.h-1\.5 {
+  background-color: #e7e0d3 !important;
+}
+
+/* Custom slow spin for day sun icon */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* -------------------------------------------------------------------------- */
+/* TAROT CARD GRAPHIC PRESERVATION (Always dark card with luminous gold text) */
+/* -------------------------------------------------------------------------- */
+
+.tarot-card-face,
+[data-theme="day"] .tarot-card-face {
+  background: linear-gradient(to bottom, #151022, #0b0813, #050308) !important;
+  background-image: linear-gradient(to bottom, #151022, #0b0813, #050308) !important;
+  border-color: #c5a059 !important;
+}
+
+.tarot-card-name,
+[data-theme="day"] .tarot-card-name {
+  color: #f3e3a2 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+}
+
+.tarot-card-subtext,
+[data-theme="day"] .tarot-card-subtext {
+  color: #c5a059 !important;
+}
+
+.tarot-card-header,
+[data-theme="day"] .tarot-card-header {
+  color: #c5a059 !important;
+}
+
+.tarot-card-number,
+[data-theme="day"] .tarot-card-number {
+  color: #f3e3a2 !important;
+  background-color: rgba(197, 160, 89, 0.25) !important;
+  border-color: #c5a059 !important;
+}
+
+.tarot-card-banner,
+[data-theme="day"] .tarot-card-banner {
+  background-color: rgba(13, 9, 24, 0.92) !important;
+  border-color: rgba(197, 160, 89, 0.3) !important;
+}
+
+.tarot-card-illustration-box,
+[data-theme="day"] .tarot-card-illustration-box {
+  background-color: #07050b !important;
+  border-color: rgba(197, 160, 89, 0.3) !important;
+}
+

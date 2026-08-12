@@ -1,0 +1,6 @@
+{
+  "name": "DIMENÚVEIS",
+  "description": "Aplicação contemplativa e de prática Hermética baseada no Evangelho dos Dimenúveis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

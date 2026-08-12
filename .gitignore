@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+dist/
+.env
+
+# Android local and build artifacts
+android/local.properties
+android/.gradle/
+android/app/build/
+android/build/

@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.evangelho",
+  "appName": "Evangelho das Dimenúveis",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
