@@ -9,6 +9,7 @@
 ## 🌌 Origem e Propósito
 
 O **Evangelho das Dimenúveis** é uma aplicação web contemplativa, filosófica e prática, fundamentada nos ensinamentos e nas transmissões do *Evangelho das Dimenúveis*, do *Tarô das Dimenúveis* e dos *Provérbios da Espiral*.
+https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/
 
 A proposta do aplicativo é oferecer um santuário digital para a prática cotidiana do autoconhecimento, meditação guiada e observação atenta do Padrão. Em vez de prever um futuro predeterminado, a obra convida o praticante a **reconhecer a presença, atravessar a experiência e abidar no Silêncio**.
 
