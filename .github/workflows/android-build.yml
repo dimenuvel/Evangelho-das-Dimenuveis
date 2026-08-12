@@ -61,7 +61,14 @@ jobs:
           else
             echo "ANDROID_KEYSTORE_BASE64 secret is not set; skipping signing setup."
           fi
-
+          
+      - name: Extract and copy Android resources
+        run: |
+          # Ensure the directory exists
+          mkdir -p android/app/src/main
+          # Unzip res.zip to the android/app/src/main directory
+          unzip -o res.zip -d android/app/src/main
+          
       - name: Ensure Capacitor Android exists
         run: npx cap add android || true
 
