@@ -61,7 +61,7 @@ jobs:
           else
             echo "ANDROID_KEYSTORE_BASE64 secret is not set; skipping signing setup."
           fi
-          
+
       - name: Ensure Capacitor Android exists
         run: npx cap add android || true
 
@@ -69,7 +69,6 @@ jobs:
         run: |
           npx cap sync android
           cd android
-          chmod +x gradlew
           ./gradlew assembleRelease -Pci --no-daemon
 
       - name: Upload APK
