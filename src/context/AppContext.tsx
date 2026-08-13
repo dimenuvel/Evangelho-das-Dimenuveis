@@ -32,6 +32,9 @@ interface AppContextType {
   closePracticeTimer: () => void;
   openTour: () => void;
   closeTour: () => void;
+  completedGiroToShare: number | null;
+  openGiroShareModal: (giroId?: number) => void;
+  closeGiroShareModal: () => void;
   openSplash: () => void;
   closeSplash: () => void;
   openProfileModal: () => void;
@@ -47,6 +50,8 @@ interface AppContextType {
   getPraticaDeHoje: () => { practice: Practice; giroTitle: string; giroNumber: string } | null;
   saveTarotReading: (reading: TarotReading) => void;
   resetProgress: () => void;
+  exportProfile: (profileId?: string) => void;
+  importProfilesFromJSON: (jsonString: string) => { success: boolean; message: string; importedCount: number };
 }
 
 const LEGACY_STORAGE_KEY = 'dimenuveis_app_progress_v2';
@@ -70,6 +75,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [isSplashOpen, setIsSplashOpen] = useState<boolean>(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [completedGiroToShare, setCompletedGiroToShare] = useState<number | null>(null);
+
+  const openGiroShareModal = (giroId?: number) => {
+    setCompletedGiroToShare(giroId ?? activeGiroId);
+  };
+
+  const closeGiroShareModal = () => {
+    setCompletedGiroToShare(null);
+  };
 
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
@@ -287,6 +301,140 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const exportProfile = (profileId?: string) => {
+    const targetProfiles = profileId
+      ? profiles.filter((p) => p.id === profileId)
+      : profiles.length > 0
+      ? profiles
+      : activeProfile ? [activeProfile] : [];
+
+    if (targetProfiles.length === 0) return;
+
+    const mainProfile = targetProfiles[0];
+    const sanitizedName = (mainProfile.name || 'praticante')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '_');
+
+    const backupPayload = {
+      app: 'Evangelho das Dimenúveis',
+      version: '1.2',
+      exportedAt: new Date().toISOString(),
+      profiles: targetProfiles.map((p) => {
+        if (p.id === activeProfileId) {
+          return {
+            ...p,
+            unlockedGiros,
+            completedGiros,
+            completedPractices,
+            activeGiroId,
+            practiceLogs,
+            tarotReadings
+          };
+        }
+        return p;
+      })
+    };
+
+    const fileName = targetProfiles.length === 1
+      ? `praticante_${sanitizedName}_backup_${new Date().toISOString().slice(0, 10)}.json`
+      : `dimenuveis_praticantes_backup_${new Date().toISOString().slice(0, 10)}.json`;
+
+    const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const importProfilesFromJSON = (jsonString: string): { success: boolean; message: string; importedCount: number } => {
+    try {
+      const parsed = JSON.parse(jsonString);
+      let incomingProfiles: UserProfile[] = [];
+
+      if (parsed && typeof parsed === 'object') {
+        if (Array.isArray(parsed.profiles)) {
+          incomingProfiles = parsed.profiles;
+        } else if (Array.isArray(parsed)) {
+          incomingProfiles = parsed;
+        } else if (parsed.name || parsed.completedPractices || parsed.unlockedGiros) {
+          incomingProfiles = [parsed];
+        }
+      }
+
+      if (!incomingProfiles || incomingProfiles.length === 0) {
+        return { success: false, message: 'O arquivo de backup não contém nenhum perfil válido de praticante.', importedCount: 0 };
+      }
+
+      const sanitizedProfiles: UserProfile[] = incomingProfiles.map((p, idx) => {
+        const profileId = p.id && !profiles.some((existing) => existing.id === p.id)
+          ? p.id
+          : 'profile_imp_' + Date.now() + '_' + idx;
+
+        return {
+          id: profileId,
+          name: p.name && typeof p.name === 'string' ? p.name : `Praticante Restaurado ${idx + 1}`,
+          age: p.age,
+          sex: p.sex,
+          createdAt: p.createdAt || new Date().toISOString(),
+          unlockedGiros: Array.isArray(p.unlockedGiros) && p.unlockedGiros.length > 0 ? p.unlockedGiros : [1],
+          completedGiros: Array.isArray(p.completedGiros) ? p.completedGiros : [],
+          completedPractices: Array.isArray(p.completedPractices) ? p.completedPractices : [],
+          activeGiroId: typeof p.activeGiroId === 'number' ? p.activeGiroId : 1,
+          practiceLogs: Array.isArray(p.practiceLogs) ? p.practiceLogs : [],
+          tarotReadings: Array.isArray(p.tarotReadings) ? p.tarotReadings : []
+        };
+      });
+
+      const mergedProfiles = [...profiles];
+
+      sanitizedProfiles.forEach((newP) => {
+        const existingIdx = mergedProfiles.findIndex(
+          (p) => p.id === newP.id || (p.name.trim().toLowerCase() === newP.name.trim().toLowerCase() && p.name.trim() !== '')
+        );
+        if (existingIdx >= 0) {
+          mergedProfiles[existingIdx] = newP;
+        } else {
+          mergedProfiles.push(newP);
+        }
+      });
+
+      setProfiles(mergedProfiles);
+
+      const activeToSet = sanitizedProfiles[0];
+      setActiveProfileId(activeToSet.id);
+      setUnlockedGiros(activeToSet.unlockedGiros);
+      setCompletedGiros(activeToSet.completedGiros);
+      setCompletedPractices(activeToSet.completedPractices);
+      setActiveGiroId(activeToSet.activeGiroId);
+      setPracticeLogs(activeToSet.practiceLogs);
+      setTarotReadings(activeToSet.tarotReadings);
+
+      try {
+        localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(mergedProfiles));
+        localStorage.setItem(ACTIVE_PROFILE_KEY, activeToSet.id);
+      } catch (e) {
+        console.error('Failed to write imported profiles to localStorage:', e);
+      }
+
+      return {
+        success: true,
+        message: `${sanitizedProfiles.length} perfil(is) de praticante restaurado(s) com sucesso!`,
+        importedCount: sanitizedProfiles.length
+      };
+    } catch (err) {
+      console.error('Import JSON parse error:', err);
+      return {
+        success: false,
+        message: 'Erro ao ler o arquivo JSON. Certifique-se de carregar um arquivo de backup válido.',
+        importedCount: 0
+      };
+    }
+  };
+
   const navigateTo = (tab: NavigationTab) => {
     setCurrentTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -416,12 +564,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (practiceGiro) {
       const allDone = practiceGiro.practices.every((p) => newCompletedPractices.includes(p.id));
       if (allDone) {
+        const wasAlreadyCompleted = completedGiros.includes(targetGiroId);
         setCompletedGiros((prev) => (prev.includes(targetGiroId) ? prev : [...prev, targetGiroId]));
 
         const nextGiroId = targetGiroId + 1;
         if (nextGiroId <= 10) {
           setUnlockedGiros((prev) => (prev.includes(nextGiroId) ? prev : [...prev, nextGiroId]));
           setActiveGiroId(nextGiroId);
+        }
+
+        // Open share modal automatically when a full Giro is newly completed
+        if (!wasAlreadyCompleted) {
+          setCompletedGiroToShare(targetGiroId);
         }
       }
     }
@@ -469,6 +623,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isTourOpen,
         isSplashOpen,
         isProfileModalOpen,
+        completedGiroToShare,
+        openGiroShareModal,
+        closeGiroShareModal,
         profiles,
         activeProfileId,
         activeProfile,
@@ -494,7 +651,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         advanceToNextPractice,
         getPraticaDeHoje,
         saveTarotReading,
-        resetProgress
+        resetProgress,
+        exportProfile,
+        importProfilesFromJSON
       }}
     >
       {children}

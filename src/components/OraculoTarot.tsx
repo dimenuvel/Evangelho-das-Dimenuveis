@@ -560,7 +560,7 @@ export const OraculoTarot: React.FC = () => {
       {/* Card Detail Modal */}
       {selectedCardForModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md overflow-y-auto p-3 sm:p-6"
+          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md overflow-y-auto p-3 sm:p-6"
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedCardForModal(null);
           }}
@@ -621,7 +621,7 @@ export const OraculoTarot: React.FC = () => {
               onClick={() => setSelectedCardForModal(null)}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#e5c158] text-black font-bold text-xs uppercase tracking-wider hover:from-[#d4af37] transition-all"
             >
-              Entendido (Abidar)
+              Eu Abido
             </button>
           </div>
         </div>
