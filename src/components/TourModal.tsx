@@ -23,8 +23,8 @@ export const TourModal: React.FC = () => {
   const slides: TourSlide[] = [
     {
       id: 0,
-      badge: '1. O EVANGELHO',
-      title: 'O Evangelho das Dimenúveis',
+      badge: '1. EVANGELHO',
+      title: 'Evangelho das Dimenúveis',
       subtitle: 'Transmissão do Reconhecimento e Presença',
       icon: <BookOpen className="w-8 h-8 text-[#f3e3a2]" />,
       iconBg: 'from-[#c5a059]/30 to-amber-950/40 border-[#c5a059]/50',
