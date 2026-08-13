@@ -1,19 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import {
-  User,
-  Sparkles,
-  X,
-  Plus,
-  Check,
-  Trash2,
-  AlertTriangle,
-  Download,
-  Upload,
-  FileText,
-  CheckCircle2,
-  AlertCircle
-} from 'lucide-react';
+import { User, Sparkles, X, Plus, Check, Trash2, AlertTriangle } from 'lucide-react';
 
 interface ProfileModalProps {
   isOpen?: boolean;
@@ -28,9 +15,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
     activeProfileId,
     createProfile,
     switchProfile,
-    deleteProfile,
-    exportProfile,
-    importProfilesFromJSON
+    deleteProfile
   } = useApp();
 
   const [name, setName] = useState<string>('');
@@ -39,14 +24,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
   const [error, setError] = useState<string>('');
   const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-
-  const [importFeedback, setImportFeedback] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const modalVisible = isOpen !== undefined ? isOpen : isProfileModalOpen;
   const handleClose = onClose || closeProfileModal;
@@ -67,6 +44,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
       sex: sex.trim() || undefined
     });
 
+    // Reset local form state
     setName('');
     setAge('');
     setSex('');
@@ -80,103 +58,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
     setConfirmDeleteId(null);
   };
 
-  const handleExport = (profileId?: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    exportProfile(profileId);
-  };
-
-  const handleFileProcess = (file: File) => {
-    if (!file) return;
-
-    if (!file.name.endsWith('.json') && file.type !== 'application/json') {
-      setImportFeedback({
-        type: 'error',
-        message: 'Por favor, selecione um arquivo válido no formato JSON (.json).'
-      });
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      if (!content) {
-        setImportFeedback({
-          type: 'error',
-          message: 'O arquivo selecionado está vazio.'
-        });
-        return;
-      }
-
-      const res = importProfilesFromJSON(content);
-      if (res.success) {
-        setImportFeedback({
-          type: 'success',
-          message: res.message
-        });
-        setIsCreatingNew(false);
-        setTimeout(() => {
-          setImportFeedback(null);
-          handleClose();
-        }, 1800);
-      } else {
-        setImportFeedback({
-          type: 'error',
-          message: res.message
-        });
-      }
-    };
-
-    reader.onerror = () => {
-      setImportFeedback({
-        type: 'error',
-        message: 'Falha ao ler o arquivo selecionado.'
-      });
-    };
-
-    reader.readAsText(file);
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileProcess(file);
-    }
-    if (e.target) e.target.value = '';
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileProcess(file);
-    }
-  };
-
   const showProfileList = profiles.length > 0 && !isCreatingNew;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-      {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept=".json,application/json"
-        onChange={handleFileInputChange}
-        className="hidden"
-        id="profile-import-file-input"
-      />
-
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
       <div className="bg-[#0b0f19] border border-[#c5a059]/50 rounded-xl p-6 sm:p-8 max-w-md w-full space-y-6 shadow-2xl relative my-8 text-neutral-200">
         
         {/* Header */}
@@ -184,7 +69,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-[#c5a059]" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-[#c5a059]">
-              {showProfileList ? 'GERENCIAR PRATICANTES' : 'PERFIL DO PRATICANTE'}
+              {showProfileList ? 'GERENCIAR PRATICANTES' : 'NOVO PERFIL DE PRATICANTE'}
             </h3>
           </div>
 
@@ -199,34 +84,11 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
           )}
         </div>
 
-        {/* Global Import Feedback Alert */}
-        {importFeedback && (
-          <div
-            className={`p-3 rounded-lg border text-xs flex items-start gap-2.5 shadow-md ${
-              importFeedback.type === 'success'
-                ? 'bg-emerald-950/70 border-emerald-700/80 text-emerald-200'
-                : 'bg-red-950/70 border-red-700/80 text-red-200'
-            }`}
-          >
-            {importFeedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-            )}
-            <div className="space-y-0.5">
-              <span className="font-bold block">
-                {importFeedback.type === 'success' ? 'Restauração Concluída' : 'Erro na Importação'}
-              </span>
-              <p className="text-[11px] leading-relaxed opacity-90">{importFeedback.message}</p>
-            </div>
-          </div>
-        )}
-
         {/* Existing profiles view */}
         {showProfileList ? (
           <div className="space-y-4">
             <p className="text-xs text-neutral-300">
-              Selecione o praticante ativo, crie um novo perfil ou exporte seus backups para migrar entre dispositivos:
+              Selecione quem está praticando agora ou crie um novo perfil para salvar o progresso individual:
             </p>
 
             <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -298,25 +160,16 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                           )}
                         </div>
                         <p className="text-[11px] text-neutral-400">
-                          {p.completedPractices?.length || 0} práticas • {p.completedGiros?.length || 0} Giros
+                          {p.completedPractices.length} práticas concluídas • {p.completedGiros.length} Giros
                           {p.age ? ` • ${p.age} anos` : ''}
+                          {p.sex ? ` • ${p.sex}` : ''}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      {/* Export Profile Button */}
-                      <button
-                        type="button"
-                        onClick={(e) => handleExport(p.id, e)}
-                        className="p-1.5 rounded-md text-neutral-400 hover:text-[#f3e3a2] hover:bg-[#c5a059]/20 transition-colors"
-                        title={`Exportar backup de ${p.name} (.json)`}
-                        id={`export-profile-${p.id}`}
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
+                    <div className="flex items-center gap-2">
+                      {isActive && <Check className="w-4 h-4 text-[#c5a059]" />}
 
-                      {/* Delete Profile Button */}
                       <button
                         type="button"
                         onClick={(e) => {
@@ -335,147 +188,97 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
               })}
             </div>
 
-            {/* Profile Actions: New + Import */}
-            <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="pt-2">
               <button
-                type="button"
                 onClick={() => setIsCreatingNew(true)}
-                className="py-2.5 px-3 rounded-md bg-[#121826] hover:bg-neutral-800 border border-[#c5a059]/40 text-[#f3e3a2] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
+                className="w-full py-2.5 rounded-md bg-[#121826] hover:bg-neutral-800 border border-[#c5a059]/40 text-[#f3e3a2] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                <span>Novo Perfil</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="py-2.5 px-3 rounded-md bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
-                title="Restaurar backup JSON do praticante"
-              >
-                <Upload className="w-4 h-4 text-[#c5a059]" />
-                <span>Importar (.json)</span>
+                <span>Criar Novo Praticante</span>
               </button>
             </div>
           </div>
         ) : (
-          /* Create Profile Form with Integrated Import Option */
-          <div className="space-y-5">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-xs text-neutral-300">
-                  Informe o nome do praticante para personalizar saudações e acompanhar a jornada individual na Espiral.
-                </p>
-              </div>
+          /* Create Profile Form */
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <p className="text-xs text-neutral-300">
+                Informe o nome do praticante para personalizar saudações e acompanhar a jornada individual na Espiral.
+              </p>
+            </div>
 
-              {error && (
-                <div className="p-2.5 bg-red-950/60 border border-red-800/80 rounded text-red-200 text-xs">
-                  {error}
-                </div>
+            {error && (
+              <div className="p-2.5 bg-red-950/60 border border-red-800/80 rounded text-red-200 text-xs">
+                {error}
+              </div>
+            )}
+
+            {/* Field: Name */}
+            <div className="space-y-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#c5a059]">
+                Nome do Praticante <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: Samuel, Maria, O Cara..."
+                className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
+                autoFocus
+              />
+            </div>
+
+            {/* Field: Age (Optional) */}
+            <div className="space-y-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400">
+                Idade <span className="text-neutral-500 font-normal lowercase">(opcional)</span>
+              </label>
+              <input
+                type="text"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="Ex: 33"
+                className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
+              />
+            </div>
+
+            {/* Field: Sex/Gender (Optional) */}
+            <div className="space-y-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400">
+                Sexo / Gênero <span className="text-neutral-500 font-normal lowercase">(opcional)</span>
+              </label>
+              <select
+                value={sex}
+                onChange={(e) => setSex(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
+              >
+                <option value="">Prefiro não informar</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+
+            <div className="pt-3 flex items-center justify-end gap-3">
+              {profiles.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsCreatingNew(false)}
+                  className="px-4 py-2.5 rounded-md bg-neutral-800 text-neutral-300 text-xs font-medium hover:bg-neutral-700 transition-colors"
+                >
+                  Voltar
+                </button>
               )}
 
-              {/* Field: Name */}
-              <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#c5a059]">
-                  Nome do Praticante <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Samuel, Maria, O Cara..."
-                  className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
-                  autoFocus
-                />
-              </div>
-
-              {/* Field: Age (Optional) */}
-              <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400">
-                  Idade <span className="text-neutral-500 font-normal lowercase">(opcional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder="Ex: 33"
-                  className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
-                />
-              </div>
-
-              {/* Field: Sex/Gender (Optional) */}
-              <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400">
-                  Sexo / Gênero <span className="text-neutral-500 font-normal lowercase">(opcional)</span>
-                </label>
-                <select
-                  value={sex}
-                  onChange={(e) => setSex(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
-                >
-                  <option value="">Prefiro não informar</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Outro">Outro</option>
-                </select>
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-3">
-                {profiles.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setIsCreatingNew(false)}
-                    className="px-4 py-2.5 rounded-md bg-neutral-800 text-neutral-300 text-xs font-medium hover:bg-neutral-700 transition-colors"
-                  >
-                    Voltar
-                  </button>
-                )}
-
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[#c5a059]/20 transition-all"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Salvar Perfil</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Import Backup Section on Creation Dialog */}
-            <div className="border-t border-neutral-800 pt-4 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-300">
-                <FileText className="w-4 h-4 text-[#c5a059]" />
-                <span>Já possui um perfil salvo?</span>
-              </div>
-              <p className="text-[11px] text-neutral-400 leading-relaxed">
-                Ao atualizar ou reinstalar o aplicativo, você pode restaurar seu histórico e progresso a partir de um arquivo de backup `.json`.
-              </p>
-
-              {/* Drag and Drop Zone / File Input Trigger */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`p-4 rounded-lg border-2 border-dashed text-center cursor-pointer transition-all ${
-                  isDragging
-                    ? 'border-[#c5a059] bg-[#c5a059]/10 text-white'
-                    : 'border-neutral-800 bg-[#07090e] hover:border-[#c5a059]/50 hover:bg-[#101522] text-neutral-300'
-                }`}
+              <button
+                type="submit"
+                className="px-6 py-2.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[#c5a059]/20 transition-all"
               >
-                <div className="flex flex-col items-center justify-center space-y-2">
-                  <Upload className="w-6 h-6 text-[#c5a059]" />
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-bold text-[#f3e3a2]">
-                      Clique para selecionar ou arraste o arquivo .json
-                    </p>
-                    <p className="text-[10px] text-neutral-500">
-                      Suporta arquivos de backup do Dimenúveis (*.json)
-                    </p>
-                  </div>
-                </div>
-              </div>
+                <Sparkles className="w-4 h-4" />
+                <span>Salvar Perfil</span>
+              </button>
             </div>
-          </div>
+          </form>
         )}
 
       </div>

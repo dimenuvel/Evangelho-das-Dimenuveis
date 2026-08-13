@@ -102,45 +102,40 @@
   border-color: rgba(184, 145, 61, 0.3) !important;
 }
 
-/* Status Badges & Alert Banners in Day Mode */
-[data-theme="day"] [class*="bg-emerald-950"] {
-  background-color: #ecfdf5 !important;
-  color: #047857 !important;
-  border-color: #a7f3d0 !important;
+/* Status Badges in Day Mode */
+[data-theme="day"] .bg-emerald-950\/80,
+[data-theme="day"] .bg-emerald-950\/50,
+[data-theme="day"] .bg-emerald-950\/40,
+[data-theme="day"] .bg-emerald-950 {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #6ee7b7 !important;
 }
 
-[data-theme="day"] [class*="bg-emerald-950"] * {
-  color: #047857 !important;
-}
-
-[data-theme="day"] [class*="bg-amber-950"] {
+[data-theme="day"] .bg-amber-950\/80,
+[data-theme="day"] .bg-amber-950\/50,
+[data-theme="day"] .bg-amber-950 {
   background-color: #fef3c7 !important;
   color: #92400e !important;
   border-color: #fde68a !important;
 }
 
-[data-theme="day"] [class*="bg-amber-950"] * {
-  color: #92400e !important;
-}
-
-[data-theme="day"] [class*="bg-indigo-950"] {
+[data-theme="day"] .bg-indigo-950\/50,
+[data-theme="day"] .bg-indigo-950 {
   background-color: #e0e7ff !important;
   color: #3730a3 !important;
   border-color: #a5b4fc !important;
 }
 
-[data-theme="day"] [class*="bg-indigo-950"] * {
-  color: #3730a3 !important;
-}
-
-[data-theme="day"] [class*="bg-red-950"] {
+[data-theme="day"] .bg-red-950\/80,
+[data-theme="day"] .bg-red-950\/60,
+[data-theme="day"] .bg-red-950\/50,
+[data-theme="day"] .bg-red-950\/40,
+[data-theme="day"] .bg-red-950\/30,
+[data-theme="day"] .bg-red-950 {
   background-color: #fef2f2 !important;
   color: #991b1b !important;
   border-color: #fca5a5 !important;
-}
-
-[data-theme="day"] [class*="bg-red-950"] * {
-  color: #991b1b !important;
 }
 
 /* Input Fields & Textareas */

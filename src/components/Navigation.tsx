@@ -20,7 +20,7 @@ export const Navigation: React.FC = () => {
   return (
     <>
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-[#07090e]/85 backdrop-blur-md border-b border-[#c5a059]/20 transition-all duration-300">
+      <header className="sticky top-0 z-[60] bg-[#07090e]/85 backdrop-blur-md border-b border-[#c5a059]/20 transition-all duration-300">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo / App Name */}
           <button
@@ -103,7 +103,7 @@ export const Navigation: React.FC = () => {
       </header>
 
       {/* Mobile Bottom Bar Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#07090e]/95 backdrop-blur-lg border-t border-[#c5a059]/20 px-2 py-1.5 flex justify-around items-center" id="mobile-nav">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-[#07090e]/95 backdrop-blur-lg border-t border-[#c5a059]/20 px-2 py-1.5 flex justify-around items-center" id="mobile-nav">
         {navItems.map((item) => {
           const isActive = currentTab === item.id;
           return (

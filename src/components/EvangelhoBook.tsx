@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { BOOK_CHAPTERS, getChapterById } from '../data/bookData';
 import { BookOpen, Search, Bookmark, Sparkles, ChevronRight } from 'lucide-react';
 
@@ -8,46 +8,15 @@ export const EvangelhoBook: React.FC = () => {
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('TODOS');
 
   const readerRef = useRef<HTMLDivElement | null>(null);
-  const shouldScrollRef = useRef<boolean>(false);
 
   const currentChapter = getChapterById(selectedChapterId) || BOOK_CHAPTERS[0];
 
   const handleSelectChapter = (id: string) => {
     setSelectedChapterId(id);
-    shouldScrollRef.current = true;
-  };
-
-  const handleSelectCategory = (cat: string) => {
-    setActiveCategoryFilter(cat);
-
-    const matching = BOOK_CHAPTERS.filter((ch) => {
-      const matchesCategory = cat === 'TODOS' || ch.category === cat;
-      const matchesSearch =
-        searchQuery.trim() === '' ||
-        ch.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ch.content.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-
-    if (matching.length > 0) {
-      setSelectedChapterId(matching[0].id);
+    if (readerRef.current) {
+      readerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-
-    shouldScrollRef.current = true;
   };
-
-  // Defer scroll until after React re-renders and browser finishes layout reflow
-  useEffect(() => {
-    if (shouldScrollRef.current) {
-      shouldScrollRef.current = false;
-      const timer = setTimeout(() => {
-        if (readerRef.current) {
-          readerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 60);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedChapterId, activeCategoryFilter]);
 
   // Filter chapters based on category and search query
   const filteredChapters = BOOK_CHAPTERS.filter((ch) => {
@@ -101,11 +70,11 @@ export const EvangelhoBook: React.FC = () => {
 
           {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-1.5 pt-1">
-            {['TODOS', ...Array.from(new Set(BOOK_CHAPTERS.map((ch) => ch.category)))].map((cat) => (
+            {['TODOS', 'TRANSMISSÃO', 'EVANGELHO', 'MISTÉRIOS', 'SALMOS', 'GIROS', 'PROVÉRBIOS'].map((cat) => (
               <button
                 key={cat}
                 type="button"
-                onClick={() => handleSelectCategory(cat)}
+                onClick={() => setActiveCategoryFilter(cat)}
                 className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors ${
                   activeCategoryFilter === cat
                     ? 'bg-[#c5a059] text-black'
@@ -161,7 +130,7 @@ export const EvangelhoBook: React.FC = () => {
         {/* Right Reader Container */}
         <div
           ref={readerRef}
-          className="lg:col-span-8 bg-[#0b0f19] border border-[#c5a059]/30 rounded-lg p-6 sm:p-8 space-y-6 shadow-xl relative min-h-[550px] scroll-mt-20"
+          className="lg:col-span-8 bg-[#0b0f19] border border-[#c5a059]/30 rounded-lg p-6 sm:p-8 space-y-6 shadow-xl relative min-h-[550px] scroll-mt-6"
         >
           {/* Chapter Header */}
           <div className="border-b border-[#c5a059]/20 pb-4 space-y-1">

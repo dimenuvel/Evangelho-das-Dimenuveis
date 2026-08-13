@@ -10,7 +10,6 @@ import { PracticeTimer } from './components/PracticeTimer';
 import { TourModal } from './components/TourModal';
 import { SplashScreen } from './components/SplashScreen';
 import { ProfileModal } from './components/ProfileModal';
-import { GiroShareModal } from './components/GiroShareModal';
 
 const MainContent: React.FC = () => {
   const { currentTab, isTimerOpen, activePractice, closePracticeTimer } = useApp();
@@ -35,13 +34,10 @@ const MainContent: React.FC = () => {
       {/* Profile Form Modal */}
       <ProfileModal />
 
-      {/* Giro Completion & Accomplishment Share Modal */}
-      <GiroShareModal />
-
       {/* Practice Timer Modal */}
       {isTimerOpen && activePractice && (
         <div
-          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md overflow-y-auto p-3 sm:p-6"
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md overflow-y-auto p-3 sm:p-6"
           onClick={(e) => {
             if (e.target === e.currentTarget) closePracticeTimer();
           }}
@@ -68,17 +64,9 @@ const MainContent: React.FC = () => {
 
         {/* Sub-footer details */}
         <div className="flex items-center justify-center gap-3 text-[11px] text-neutral-400 pt-1">
-          <a
-            href="https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#f3e3a2] transition-colors underline decoration-[#c5a059]/40 underline-offset-2"
-            id="footer-official-site-link"
-          >
-            © Evangelho das Dimenúveis
-          </a>
+          <span>© Evangelho das Dimenúveis</span>
           <span className="text-[#c5a059]/40">•</span>
-          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.2</span>
+          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.0.3</span>
           <span className="text-[#c5a059]/40">•</span>
           <a
             href={`mailto:samuel.tiem@proton.me?subject=${encodeURIComponent('Evangelho das Dimenúveis')}`}
