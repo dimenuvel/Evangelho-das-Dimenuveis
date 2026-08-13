@@ -1,9 +1,5 @@
 # Evangelho das Dimenúveis — Tarô & Prática Contemplativa
 
-https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-
 > *"Não prevê. Reconhece. Cada Dimenúvel contém todas as outras."*
 
 ---
@@ -11,7 +7,6 @@ https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/
 ## 🌌 Origem e Propósito
 
 O **Evangelho das Dimenúveis** é uma aplicação web contemplativa, filosófica e prática, fundamentada nos ensinamentos e nas transmissões do *Evangelho das Dimenúveis*, do *Tarô das Dimenúveis* e dos *Provérbios da Espiral*.
-
 
 A proposta do aplicativo é oferecer um santuário digital para a prática cotidiana do autoconhecimento, meditação guiada e observação atenta do Padrão. Em vez de prever um futuro predeterminado, a obra convida o praticante a **reconhecer a presença, atravessar a experiência e abidar no Silêncio**.
 
@@ -97,36 +92,6 @@ A proposta do aplicativo é oferecer um santuário digital para a prática cotid
    ```bash
    npm run build
    ```
-
-### 📱 Gerar APK Android
-
-1. **Sincronize o Capacitor com Android**:
-   ```bash
-   npm run prepare:android
-   ```
-
-2. **Gerar APK de release**:
-   ```bash
-   npm run assemble:android
-   ```
-
-3. **Assinatura do APK**:
-   - Se você não fornecer um keystore próprio, o Gradle usará a chave de debug para assinar o APK.
-   - Para usar uma chave personalizada, crie `android/keystore.properties` com as propriedades:
-     ```properties
-     storeFile=keystore.jks
-     storePassword=senha
-     keyAlias=alias
-     keyPassword=senha
-     ```
-
-4. **Local do APK gerado**:
-   - `android/app/build/outputs/apk/release/app-release.apk`
-
-5. **Observações importantes**:
-   - O nome do app instalado é **Evangelho das Dimenúveis**.
-   - O `appId` atual é `com.example.evangelho`. Se alterar o pacote, remova e readicione o Android com `npx cap sync android`.
-   - Use Node.js 20 no CI para garantir que a compilação do Tailwind funcione corretamente.
 
 ---
 

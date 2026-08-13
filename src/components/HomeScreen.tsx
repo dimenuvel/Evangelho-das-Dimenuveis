@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { PraticaDeHoje } from './PraticaDeHoje';
+import { CiclosDePratica } from './CiclosDePratica';
 import { getGiroById, GIROS_DATA } from '../data/girosData';
 import { getRandomHumorousQuote, HumorousQuote } from '../data/humorousQuotes';
 import { Compass, Flame, Sparkles, BookOpen, ArrowRight, Quote, RefreshCw, Sun, Sunrise, Moon, User, CheckCircle2, Play } from 'lucide-react';
@@ -175,6 +176,11 @@ export const HomeScreen: React.FC = () => {
       {/* Primary Section: PRÁTICA DE HOJE */}
       <div className="space-y-3">
         <PraticaDeHoje />
+      </div>
+
+      {/* Ciclos de Prática Chart */}
+      <div className="space-y-3 pt-2">
+        <CiclosDePratica />
       </div>
 
       {/* Quick Access Grid: 3 DESTINATIONS */}

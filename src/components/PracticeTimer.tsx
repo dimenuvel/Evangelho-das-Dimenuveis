@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { Practice } from '../types';
-import { Play, Pause, RotateCcw, CheckCircle2, X, Volume2, VolumeX, Sparkles, ChevronRight } from 'lucide-react';
+import { Play, Pause, RotateCcw, CheckCircle2, X, Volume2, VolumeX, Sparkles, ChevronRight, Share2 } from 'lucide-react';
 
 interface PracticeTimerProps {
   practice: Practice;
@@ -14,7 +14,9 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
     closePracticeTimer,
     navigateTo,
     getNextPracticeInSequence,
-    advanceToNextPractice
+    advanceToNextPractice,
+    openGiroShareModal,
+    completedGiroToShare
   } = useApp();
 
   const [selectedMinutes, setSelectedMinutes] = useState<number>(practice.suggestedDurationMinutes || 5);
@@ -97,6 +99,15 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
       handleAdvanceToNext();
     }
   }, [autoAdvanceSeconds, isCompleted, nextPractice, isAutoAdvancePaused]);
+
+  // Pause auto-advance and close practice timer if a Giro share modal is triggered automatically
+  useEffect(() => {
+    if (completedGiroToShare !== null) {
+      setIsAutoAdvancePaused(true);
+      closePracticeTimer();
+      if (onClose) onClose();
+    }
+  }, [completedGiroToShare, closePracticeTimer, onClose]);
 
   // Synthesize Tibetan Bowl / Bell Chime using Web Audio API
   const playCompletionChime = () => {
@@ -457,7 +468,22 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
             )}
 
             {/* Actions */}
-            <div className="flex gap-2 w-full justify-center pt-1">
+            <div className="flex flex-wrap items-center justify-center gap-2 w-full pt-1">
+              <button
+                onClick={() => {
+                  setIsAutoAdvancePaused(true);
+                  closePracticeTimer();
+                  if (onClose) onClose();
+                  openGiroShareModal(practice.giroId);
+                }}
+                className="px-4 py-2 rounded-md bg-[#c5a059]/20 hover:bg-[#c5a059]/30 text-[#f3e3a2] border border-[#c5a059]/50 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+                title="Compartilhar realização com um amigo"
+                id="timer-share-accomplishment-button"
+              >
+                <Share2 className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>Compartilhar Conquista</span>
+              </button>
+
               <button
                 onClick={resetTimer}
                 className="px-4 py-2 rounded-md bg-neutral-800 hover:bg-neutral-700 text-xs text-neutral-300 transition-colors border border-neutral-700"
