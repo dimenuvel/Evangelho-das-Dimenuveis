@@ -32,6 +32,90 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
 
   const nextPractice = getNextPracticeInSequence(practice.id);
 
+  // Screen Wake Lock API: Prevent screen sleep/screensaver while timer is running
+  const [isWakeLockActive, setIsWakeLockActive] = useState<boolean>(false);
+  const wakeLockRef = useRef<any>(null);
+  const fallbackVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    let released = false;
+
+    const acquireWakeLock = async () => {
+      if (!isRunning) return;
+
+      // 1. Try Native Screen Wake Lock API
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+          setIsWakeLockActive(true);
+          
+          wakeLockRef.current.addEventListener('release', () => {
+            if (!released && isRunning) {
+              setIsWakeLockActive(false);
+            }
+          });
+          return;
+        } catch (err) {
+          console.warn('Native Wake Lock request failed, falling back:', err);
+        }
+      }
+
+      // 2. Fallback for mobile browsers (iOS Safari / strict webview) using a muted loop video element
+      try {
+        if (!fallbackVideoRef.current) {
+          const video = document.createElement('video');
+          video.setAttribute('aria-hidden', 'true');
+          video.setAttribute('playsinline', '');
+          video.muted = true;
+          video.loop = true;
+          // 1-frame tiny base64 encoded video
+          video.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAA1tZGF0AAAAAA==';
+          fallbackVideoRef.current = video;
+        }
+        await fallbackVideoRef.current.play();
+        setIsWakeLockActive(true);
+      } catch (e) {
+        console.warn('Fallback anti-sleep video failed:', e);
+        setIsWakeLockActive(false);
+      }
+    };
+
+    const releaseWakeLock = async () => {
+      released = true;
+      if (wakeLockRef.current) {
+        try {
+          await wakeLockRef.current.release();
+        } catch (e) {}
+        wakeLockRef.current = null;
+      }
+      if (fallbackVideoRef.current) {
+        try {
+          fallbackVideoRef.current.pause();
+        } catch (e) {}
+      }
+      setIsWakeLockActive(false);
+    };
+
+    if (isRunning) {
+      acquireWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isRunning) {
+        acquireWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      releaseWakeLock();
+    };
+  }, [isRunning]);
+
   // Sync state when practice prop changes (e.g. after auto advancing)
   useEffect(() => {
     setSelectedMinutes(practice.suggestedDurationMinutes || 5);
@@ -185,9 +269,21 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
       {/* Top Bar */}
       <div className="flex items-center justify-between border-b border-[#c5a059]/20 pb-4 mb-6">
         <div>
-          <span className="text-xs uppercase tracking-widest text-[#c5a059] font-medium block">
-            PRÁTICA DA ESPIRAL • GIRO {practice.giroId}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-widest text-[#c5a059] font-medium block">
+              PRÁTICA DA ESPIRAL • GIRO {practice.giroId}
+            </span>
+            {isRunning && (
+              <span className={`inline-flex items-center gap-1 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full border transition-all ${
+                isWakeLockActive 
+                  ? 'text-amber-300 bg-amber-500/20 border-amber-500/40 animate-pulse'
+                  : 'text-neutral-400 bg-neutral-800/80 border-neutral-700'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isWakeLockActive ? 'bg-amber-400' : 'bg-neutral-500'}`}></span>
+                {isWakeLockActive ? 'Tela Ativa' : 'Anti-Repouso'}
+              </span>
+            )}
+          </div>
           <h2 className="text-xl font-serif font-bold text-[#f3e3a2] mt-0.5">
             {practice.title}
           </h2>
