@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getGiroById } from '../data/girosData';
-import { ArrowLeft, Play, CheckCircle2, Compass, Clock, Sparkles } from 'lucide-react';
+import { ArrowLeft, Play, CheckCircle2, Compass, Clock, Sparkles, Share2 } from 'lucide-react';
 
 interface GiroDetailViewProps {
   giroId: number;
@@ -9,7 +9,7 @@ interface GiroDetailViewProps {
 }
 
 export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }) => {
-  const { openPracticeTimer, completedPractices } = useApp();
+  const { openPracticeTimer, completedPractices, completedGiros, openGiroShareModal } = useApp();
   const [activeTab, setActivePracticeTab] = useState<'praticas' | 'transmissao'>('praticas');
 
   const giro = getGiroById(giroId);
@@ -59,19 +59,33 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
         </p>
 
         {/* Virtues & Word Badge */}
-        <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
-          <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
-            <strong className="text-[#c5a059]">Virtude:</strong> {giro.virtue}
-          </span>
-          <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
-            <strong className="text-[#c5a059]">Sombra:</strong> {giro.shadow}
-          </span>
-          <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
-            <strong className="text-[#c5a059]">Ferramenta:</strong> {giro.tool}
-          </span>
-          <span className="px-3 py-1 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#f3e3a2] font-bold">
-            Palavra: {giro.word}
-          </span>
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
+              <strong className="text-[#c5a059]">Virtude:</strong> {giro.virtue}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
+              <strong className="text-[#c5a059]">Sombra:</strong> {giro.shadow}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
+              <strong className="text-[#c5a059]">Ferramenta:</strong> {giro.tool}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#f3e3a2] font-bold">
+              Palavra: {giro.word}
+            </span>
+          </div>
+
+          {(completedGiros.includes(giroId) || (giro.practices.length > 0 && giro.practices.every((p) => completedPractices.includes(p.id)))) && (
+            <button
+              onClick={() => openGiroShareModal(giroId)}
+              className="px-4 py-1.5 rounded-lg bg-[#c5a059]/20 hover:bg-[#c5a059]/30 text-[#f3e3a2] border border-[#c5a059]/50 font-bold text-xs flex items-center gap-2 transition-all shadow-sm"
+              title="Compartilhar realização com um amigo"
+              id="share-giro-accomplishment-button"
+            >
+              <Share2 className="w-3.5 h-3.5 text-[#c5a059]" />
+              <span>Compartilhar Conquista</span>
+            </button>
+          )}
         </div>
       </div>
 
