@@ -4,6 +4,12 @@
 
 > *"Não prevê. Reconhece. Cada Dimenúvel contém todas as outras."*
 
+## Destinos
+- Site: https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/
+- Aplicativo Online: https://dimenuveis.ai.studio/
+- GitHub / Android (para instalar): https://github.com/dimenuvel/Evangelho-das-Dimenuveis
+
+
 ---
 
 ## 🌌 Origem e Propósito
