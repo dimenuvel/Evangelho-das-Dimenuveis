@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Sparkles, X, ArrowRight, BookOpen } from 'lucide-react';
-import splashImage from '../assets/images/splash_poster_no_triangle_1786399981216.jpg';
+import splashImage from '../assets/images/splash_poster_no_o_1786633063601.jpg';
 
 export const SplashScreen: React.FC = () => {
   const { isSplashOpen, closeSplash, openTour } = useApp();
@@ -14,7 +14,7 @@ export const SplashScreen: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-[#04060a]/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-[100] bg-[#04060a]/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-fadeIn"
       id="splash-screen-overlay"
     >
       <div className="relative max-w-2xl w-full my-auto flex flex-col items-center bg-[#070a12] border border-[#c5a059]/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 text-center">
