@@ -9,10 +9,10 @@
 - Aplicativo Online: https://dimenuveis.ai.studio/
 - GitHub / Android (para instalar): https://github.com/dimenuvel/Evangelho-das-Dimenuveis
 
-☕ Apoie o Evangelho
+☕ **Apoie o Evangelho**
 Se quiser. Sem obrigação. O Evangelho das Dimenúveis é gratuito, sem anúncios, sem assinaturas e sem contas.
 Se o projeto lhe trouxe alguma coisa e você quiser contribuir para mantê-lo livre, você pode fazê-lo através de Bitcoin.
-bitcoin:BC1QQUEHLPY52CFQ50SZFQM9M7SLY0KWEXDVNMT5J9
+**bitcoin:BC1QQUEHLPY52CFQ50SZFQM9M7SLY0KWEXDVNMT5J9**
 
 
 ---
