@@ -9,6 +9,10 @@
 - Aplicativo Online: https://dimenuveis.ai.studio/
 - GitHub / Android (para instalar): https://github.com/dimenuvel/Evangelho-das-Dimenuveis
 
+☕ Apoie o Evangelho
+Se quiser. Sem obrigação. 
+bitcoin:BC1QQUEHLPY52CFQ50SZFQM9M7SLY0KWEXDVNMT5J9
+
 
 ---
 
