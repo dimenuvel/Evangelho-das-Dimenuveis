@@ -1,4 +1,4 @@
-# Evangelho das Dimenúveis — Tarô & Prática Contemplativa
+# Evangelho das Dimenúveis — Prática Contemplativa & Tarô 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
