@@ -104,7 +104,7 @@ export const CiclosDePratica: React.FC = () => {
 
     // Days calculation (7d or 30d)
     const numDays = timeframe === '7d' ? 7 : 30;
-    const daysArray: { dateStr: string; label: string; minutos: number; sessoes: number; rawDate: Date }[] = [];
+    const daysArray: { dateStr: string; label: string; fullLabel: string; minutos: number; sessoes: number; rawDate: Date }[] = [];
 
     const daysOfWeek = language === 'en'
       ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -126,9 +126,12 @@ export const CiclosDePratica: React.FC = () => {
         label = `${d.getDate()} ${months[d.getMonth()]}`;
       }
 
+      const fullLabel = `${daysOfWeek[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+
       daysArray.push({
         dateStr,
         label,
+        fullLabel,
         minutos: 0,
         sessoes: 0,
         rawDate: d

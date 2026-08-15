@@ -3,26 +3,27 @@ import { useApp } from '../context/AppContext';
 import { GIROS_DATA, getGiroById } from '../data/girosData';
 import { GiroDetailView } from './GiroDetailView';
 import { PraticaDeHoje } from './PraticaDeHoje';
-import { Compass, Lock, CheckCircle, Flame, ArrowRight, BookOpen, ChevronRight, User, Plus, Users, Sparkles } from 'lucide-react';
+import { Compass, Lock, CheckCircle, Flame, ArrowRight, ChevronRight, Users } from 'lucide-react';
+import { getTranslatedGiro } from '../utils/dataI18n';
 
 export const ContinuarEspiral: React.FC = () => {
   const {
     activeGiroId,
     setActiveGiroId,
     getGiroStatus,
-    navigateTo,
     unlockedGiros,
-    completedGiros,
     profiles,
-    activeProfileId,
     activeProfile,
     switchProfile,
-    openProfileModal
+    openProfileModal,
+    t,
+    language
   } = useApp();
 
   const [selectedGiroForDetail, setSelectedGiroForDetail] = useState<number | null>(null);
 
-  const activeGiro = getGiroById(activeGiroId);
+  const rawGiro = getGiroById(activeGiroId);
+  const activeGiro = rawGiro ? getTranslatedGiro(rawGiro, language) : null;
 
   // If a specific Giro was selected for detailed view
   if (selectedGiroForDetail !== null) {
@@ -40,13 +41,13 @@ export const ContinuarEspiral: React.FC = () => {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c5a059]/10 border border-[#c5a059]/30 text-[#f3e3a2] text-xs font-bold tracking-widest uppercase">
           <Compass className="w-4 h-4 text-[#c5a059]" />
-          <span>A ESPIRAL & PRÁTICAS</span>
+          <span>{t('espiral.title')}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-wide">
-          A Espiral e Práticas Contemplativas
+          {t('espiral.title')}
         </h1>
         <p className="text-sm text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          Sua prática do dia e a jornada encadeada dos Dez Giros do Evangelho das Dimenúveis.
+          {t('espiral.desc')}
         </p>
       </div>
 
@@ -55,10 +56,10 @@ export const ContinuarEspiral: React.FC = () => {
         <div className="flex items-center gap-2 border-b border-neutral-800 pb-2.5">
           <Users className="w-4 h-4 text-[#c5a059]" />
           <span className="text-xs font-bold uppercase tracking-wider text-[#c5a059]">
-            Praticante Ativo na Espiral:
+            {language === 'en' ? 'Active Practitioner in Spiral:' : 'Praticante Ativo na Espiral:'}
           </span>
           <span className="text-sm font-serif font-bold text-white bg-[#c5a059]/20 px-2.5 py-0.5 rounded border border-[#c5a059]/40">
-            {activeProfile?.name || 'Praticante'}
+            {activeProfile?.name || (language === 'en' ? 'Practitioner' : 'Praticante')}
           </span>
         </div>
 
@@ -66,43 +67,26 @@ export const ContinuarEspiral: React.FC = () => {
         {profiles.length > 0 && (
           <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-none flex-wrap">
             <span className="text-[11px] text-neutral-400 font-mono uppercase tracking-wider shrink-0">
-              Alternar praticante:
+              {language === 'en' ? 'Switch practitioner:' : 'Alternar praticante:'}
             </span>
             {profiles.map((p) => {
-              const isSelected = p.id === activeProfileId;
+              const isSelected = p.id === activeProfile?.id;
               return (
                 <button
                   key={p.id}
                   onClick={() => switchProfile(p.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-all shrink-0 ${
+                  className={`px-3 py-1 rounded-full text-xs font-serif transition-all border ${
                     isSelected
-                      ? 'bg-[#c5a059] text-black font-bold shadow-md'
-                      : 'bg-[#121826] text-neutral-300 hover:text-white hover:bg-neutral-800 border border-neutral-800'
+                      ? 'bg-[#c5a059] text-black border-[#c5a059] font-bold shadow-md'
+                      : 'bg-[#121826] hover:bg-neutral-800 text-neutral-300 border-neutral-700'
                   }`}
                 >
-                  <User className="w-3.5 h-3.5" />
-                  <span>{p.name}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${isSelected ? 'bg-black/20 text-black' : 'bg-neutral-800 text-neutral-400'}`}>
-                    {p.completedPractices?.length || 0} p.
-                  </span>
+                  {p.name}
                 </button>
               );
             })}
           </div>
         )}
-
-        {/* Centered Create New Profile Button below user list */}
-        <div className="flex justify-center pt-1 border-t border-neutral-800/60">
-          <button
-            onClick={openProfileModal}
-            className="px-5 py-2 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all"
-            title="Criar novo perfil de praticante"
-            id="create-profile-spiral-button"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Criar Novo Perfil</span>
-          </button>
-        </div>
       </div>
 
       {/* Featured Daily Practice Section */}
@@ -119,7 +103,7 @@ export const ContinuarEspiral: React.FC = () => {
             <div className="space-y-2">
               <span className="text-xs uppercase tracking-widest text-[#c5a059] font-bold flex items-center gap-2">
                 <Flame className="w-4 h-4 text-amber-400" />
-                POSIÇÃO ATUAL NA ESPIRAL
+                {t('espiral.currentGiro')}
               </span>
 
               <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
@@ -137,13 +121,13 @@ export const ContinuarEspiral: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-neutral-400">
                 <span className="px-2.5 py-1 rounded bg-[#07090e] border border-neutral-800">
-                  <strong className="text-neutral-200">Virtude:</strong> {activeGiro.virtue}
+                  <strong className="text-neutral-200">{language === 'en' ? 'Virtue:' : 'Virtude:'}</strong> {activeGiro.virtue}
                 </span>
                 <span className="px-2.5 py-1 rounded bg-[#07090e] border border-neutral-800">
-                  <strong className="text-neutral-200">Ferramenta:</strong> {activeGiro.tool}
+                  <strong className="text-neutral-200">{language === 'en' ? 'Tool:' : 'Ferramenta:'}</strong> {activeGiro.tool}
                 </span>
                 <span className="px-2.5 py-1 rounded bg-[#07090e] border border-neutral-800">
-                  <strong className="text-[#f3e3a2]">Palavra:</strong> {activeGiro.word}
+                  <strong className="text-[#f3e3a2]">{language === 'en' ? 'Word:' : 'Palavra:'}</strong> {activeGiro.word}
                 </span>
               </div>
             </div>
@@ -154,7 +138,7 @@ export const ContinuarEspiral: React.FC = () => {
                 id="continuar-giro-atual-button"
                 className="px-6 py-3.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] hover:to-[#f3e3a2] text-black font-bold tracking-wider uppercase text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#c5a059]/20 hover:scale-[1.02] active:scale-95 transition-all"
               >
-                <span>CONTINUAR GIRO</span>
+                <span>{t('espiral.startGiro')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -165,11 +149,12 @@ export const ContinuarEspiral: React.FC = () => {
       {/* List of All 10 Giros */}
       <div className="space-y-4" id="caminho-dos-giros">
         <h3 className="text-lg font-serif font-bold text-[#f3e3a2] flex items-center gap-2">
-          <span>O Caminho dos Dez Giros</span>
+          <span>{language === 'en' ? 'The Path of the Ten Turns' : 'O Caminho dos Dez Giros'}</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {GIROS_DATA.map((giro) => {
+          {GIROS_DATA.map((rawG) => {
+            const giro = getTranslatedGiro(rawG, language);
             const status = getGiroStatus(giro.id);
             const isUnlocked = unlockedGiros.includes(giro.id);
             const isCurrent = activeGiroId === giro.id;
@@ -208,19 +193,19 @@ export const ContinuarEspiral: React.FC = () => {
                     {status === 'CONCLUÍDO' && (
                       <span className="px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800 text-[10px] font-bold tracking-wider uppercase flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
-                        CONCLUÍDO
+                        {t('espiral.completed')}
                       </span>
                     )}
                     {status === 'EM PRÁTICA' && (
                       <span className="px-2.5 py-1 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800 text-[10px] font-bold tracking-wider uppercase flex items-center gap-1">
                         <Flame className="w-3 h-3 text-amber-400" />
-                        EM PRÁTICA
+                        {t('espiral.currentGiro')}
                       </span>
                     )}
                     {status === 'BLOQUEADO' && (
                       <span className="px-2.5 py-1 rounded-full bg-neutral-900 text-neutral-500 border border-neutral-800 text-[10px] font-bold tracking-wider uppercase flex items-center gap-1">
                         <Lock className="w-3 h-3" />
-                        BLOQUEADO
+                        {t('espiral.locked')}
                       </span>
                     )}
                   </div>
@@ -232,16 +217,20 @@ export const ContinuarEspiral: React.FC = () => {
 
                 {giro.id === 10 && (
                   <div className="mb-3 p-2 rounded bg-[#c5a059]/10 border border-[#c5a059]/30 text-[11px] text-[#f3e3a2] flex items-center gap-1.5 font-medium">
-                    <BookOpen className="w-3.5 h-3.5 text-[#c5a059] shrink-0" />
-                    <span>Os passos avançados após o 10º Giro estão descritos no livro.</span>
+                    <span>
+                      {language === 'en'
+                        ? 'The advanced steps beyond the 10th Turn are detailed in the book.'
+                        : 'Os passos avançados após o 10º Giro estão descritos no livro.'
+                      }
+                    </span>
                   </div>
                 )}
 
                 <div className="flex items-center justify-between text-[11px] text-neutral-400 pt-2 border-t border-neutral-800/60">
-                  <span>{giro.practices.length} práticas contemplativas</span>
+                  <span>{giro.practices.length} {language === 'en' ? 'contemplative practices' : 'práticas contemplativas'}</span>
                   {isUnlocked && (
                     <span className="text-[#c5a059] flex items-center gap-1 font-medium group-hover:translate-x-1 transition-transform">
-                      Ver Giro <ChevronRight className="w-3 h-3" />
+                      {language === 'en' ? 'View Turn' : 'Ver Giro'} <ChevronRight className="w-3 h-3" />
                     </span>
                   )}
                 </div>
