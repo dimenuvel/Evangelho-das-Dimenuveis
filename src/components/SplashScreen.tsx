@@ -4,7 +4,7 @@ import { Sparkles, X, ArrowRight, BookOpen } from 'lucide-react';
 import splashImage from '../assets/images/splash_poster_no_o_1786633063601.jpg';
 
 export const SplashScreen: React.FC = () => {
-  const { isSplashOpen, closeSplash, openTour } = useApp();
+  const { isSplashOpen, closeSplash, openTour, language, setLanguage } = useApp();
 
   if (!isSplashOpen) return null;
 
@@ -20,10 +20,40 @@ export const SplashScreen: React.FC = () => {
       <div className="relative max-w-2xl w-full my-auto flex flex-col items-center bg-[#070a12] border border-[#c5a059]/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 text-center">
         
         {/* Top Control Bar */}
-        <div className="w-full flex items-center justify-center pb-2 border-b border-[#c5a059]/20">
+        <div className="w-full flex items-center justify-between pb-2 border-b border-[#c5a059]/20">
           <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#c5a059] font-medium">
             <Sparkles className="w-4 h-4 text-[#f3e3a2]" />
-            <span>Transmissão Canônica</span>
+            <span>{language === 'en' ? 'CANONICAL TRANSMISSION' : 'TRANSMISSÃO CANÔNICA'}</span>
+          </div>
+
+          {/* Language Switch Icons */}
+          <div className="flex items-center gap-1 bg-[#04060a] border border-[#c5a059]/30 rounded-lg p-0.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setLanguage('pt')}
+              title="Português"
+              className={`px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1 transition-all ${
+                language === 'pt'
+                  ? 'bg-[#c5a059] text-black shadow-sm font-bold'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              <span className="text-sm leading-none">🇧🇷</span>
+              <span className="text-[10px] uppercase tracking-wider font-mono">PT</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              title="English"
+              className={`px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1 transition-all ${
+                language === 'en'
+                  ? 'bg-[#c5a059] text-black shadow-sm font-bold'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              <span className="text-sm leading-none">🇺🇸</span>
+              <span className="text-[10px] uppercase tracking-wider font-mono">EN</span>
+            </button>
           </div>
         </div>
 
@@ -45,7 +75,7 @@ export const SplashScreen: React.FC = () => {
               id="splash-enter-button"
               className="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-[#c5a059] via-[#e5c158] to-[#c5a059] hover:from-[#d4af37] hover:to-[#e5c158] text-black font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-[#c5a059]/20 hover:scale-[1.02] active:scale-95 transition-all"
             >
-              <span>ENTRAR NA ESPIRAL</span>
+              <span>{language === 'en' ? 'ENTER THE SPIRAL' : 'ENTRAR NA ESPIRAL'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -57,12 +87,12 @@ export const SplashScreen: React.FC = () => {
               className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#121826] hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-semibold border border-neutral-800 flex items-center justify-center gap-2 transition-colors"
             >
               <BookOpen className="w-4 h-4 text-[#c5a059]" />
-              <span>Guia de Boas-Vindas</span>
+              <span>{language === 'en' ? 'Welcome Guide' : 'Guia de Boas-Vindas'}</span>
             </button>
           </div>
 
           <p className="text-[11px] font-mono tracking-widest text-[#c5a059]/80 uppercase pt-1">
-            ABIDA NO PADRÃO. VOCÊ É A FORMA.
+            {language === 'en' ? 'ABIDE IN THE PATTERN. YOU ARE THE SHAPE.' : 'ABIDA NO PADRÃO. VOCÊ É A FORMA.'}
           </p>
         </div>
 

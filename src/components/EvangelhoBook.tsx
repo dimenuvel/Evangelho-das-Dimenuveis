@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
 import { BOOK_CHAPTERS, getChapterById } from '../data/bookData';
 import { BookOpen, Search, Bookmark, Sparkles, ChevronRight } from 'lucide-react';
 
 export const EvangelhoBook: React.FC = () => {
+  const { language } = useApp();
   const [selectedChapterId, setSelectedChapterId] = useState<string>('definicoes_prefacio');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('TODOS');
@@ -65,20 +67,26 @@ export const EvangelhoBook: React.FC = () => {
       {/* Top Banner */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-wide">
-          Evangelho das Dimenúveis
+          {language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis'}
         </h1>
         <p className="text-sm text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          "O Livro transmite. O App pratica. O Tarô reflete. A Espiral conduz."
+          {language === 'en'
+            ? '"The Book transmits. The App practices. The Tarot reflects. The Spiral leads."'
+            : '"O Livro transmite. O App pratica. O Tarô reflete. A Espiral conduz."'
+          }
         </p>
 
         {/* Notice: Summaries Disclaimer */}
         <div className="max-w-2xl mx-auto p-3.5 bg-[#1c0d11]/90 border border-red-500/50 rounded-lg text-xs leading-relaxed space-y-1.5 text-center shadow-md">
           <p className="text-red-400 font-bold flex items-center justify-center gap-1.5 tracking-wide text-xs sm:text-sm">
             <BookOpen className="w-4 h-4 text-red-400 shrink-0" />
-            <span>AVISO: RESUMOS CONTEMPLATIVOS</span>
+            <span>{language === 'en' ? 'NOTICE: CONTEMPLATIVE SUMMARIES' : 'AVISO: RESUMOS CONTEMPLATIVOS'}</span>
           </p>
           <p className="text-red-300/90 text-[11px] sm:text-xs leading-relaxed">
-            Os textos exibidos nesta seção são <strong>resumos e excertos direcionados</strong>. Os textos integrais completos e todas as práticas e rituais em sua totalidade estão presentes exclusivamente no livro <em>Evangelho das Dimenúveis</em>.
+            {language === 'en'
+              ? 'The texts displayed in this section are directed summaries and excerpts. The full canonical texts, practices, and complete rituals are present exclusively in the book Gospel of Dimenuous (in Portuguese).'
+              : 'Os textos exibidos nesta seção são resumos e excertos direcionados. Os textos integrais completos e todas as práticas e rituais em sua totalidade estão presentes exclusivamente no livro Evangelho das Dimenúveis.'
+            }
           </p>
         </div>
       </div>

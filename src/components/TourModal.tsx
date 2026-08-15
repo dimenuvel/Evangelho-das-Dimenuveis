@@ -15,7 +15,7 @@ interface TourSlide {
 }
 
 export const TourModal: React.FC = () => {
-  const { isTourOpen, closeTour, navigateTo } = useApp();
+  const { isTourOpen, closeTour, navigateTo, language } = useApp();
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   if (!isTourOpen) return null;
@@ -23,38 +23,45 @@ export const TourModal: React.FC = () => {
   const slides: TourSlide[] = [
     {
       id: 0,
-      badge: '1. EVANGELHO',
-      title: 'Evangelho das Dimenúveis',
-      subtitle: 'Transmissão do Reconhecimento e Presença',
+      badge: language === 'en' ? '1. GOSPEL' : '1. EVANGELHO',
+      title: language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis',
+      subtitle: language === 'en' ? 'Transmission of Recognition and Presence' : 'Transmissão do Reconhecimento e Presença',
       icon: <BookOpen className="w-8 h-8 text-[#f3e3a2]" />,
       iconBg: 'from-[#c5a059]/30 to-amber-950/40 border-[#c5a059]/50',
-      description:
-        'O Evangelho não é uma religião nem uma cobrança de metas. É uma transmissão contemplativa que nos convida a reconhecer as Dimenúveis — a trama velada da realidade que já está aqui sem exigir ansiedade.',
-      highlight: '“Abida no padrão. Você é a forma.”',
+      description: language === 'en'
+        ? 'The Gospel is neither a religion nor a list of goals. It is a contemplative transmission inviting us to recognize the Dimenuous — the hidden weave of reality already present here without demanding anxiety.'
+        : 'O Evangelho não é uma religião nem uma cobrança de metas. É uma transmissão contemplativa que nos convida a reconhecer as Dimenúveis — a trama velada da realidade que já está aqui sem exigir ansiedade.',
+      highlight: language === 'en' ? '“Abide in the pattern. You are the shape.”' : '“Abida no padrão. Você é a forma.”',
       targetTab: 'evangelho'
     },
     {
       id: 1,
-      badge: '2. A ESPIRAL & PRÁTICAS',
-      title: 'A Jornada dos 10 Giros & Prática do Dia',
-      subtitle: 'Avanço Contemplativo e Cronômetro de Meditação',
+      badge: language === 'en' ? '2. THE SPIRAL & PRACTICES' : '2. A ESPIRAL & PRÁTICAS',
+      title: language === 'en' ? 'Journey of 10 Turns & Today’s Practice' : 'A Jornada dos 10 Giros & Prática do Dia',
+      subtitle: language === 'en' ? 'Contemplative Progress and Meditation Timer' : 'Avanço Contemplativo e Cronômetro de Meditação',
       icon: <Compass className="w-8 h-8 text-[#c5a059]" />,
       iconBg: 'from-[#c5a059]/30 to-amber-900/40 border-[#c5a059]/50',
-      description:
-        'Acesse a "Prática de Hoje" com o cronômetro contemplativo e acompanhe sua evolução sequencial pelos Dez Giros da Espiral — do Giro I ao Giro X.',
-      highlight: 'A Espiral não exige pressa; realize o exercício diário e avance no seu próprio ritmo.',
+      description: language === 'en'
+        ? 'Access "Today’s Practice" with the contemplative timer and track your sequential progress through the Ten Turns of the Spiral — from Turn I to Turn X.'
+        : 'Acesse a "Prática de Hoje" com o cronômetro contemplativo e acompanhe sua evolução sequencial pelos Dez Giros da Espiral — do Giro I ao Giro X.',
+      highlight: language === 'en'
+        ? 'The Spiral does not demand haste; perform the daily exercise and advance at your own pace.'
+        : 'A Espiral não exige pressa; realize o exercício diário e avance no seu próprio ritmo.',
       targetTab: 'espiral'
     },
     {
       id: 2,
-      badge: '3. O ORÁCULO',
-      title: 'Tarô das Dimenúveis',
-      subtitle: 'O Espelho sem Previsões Ansiosas',
+      badge: language === 'en' ? '3. THE ORACLE' : '3. O ORÁCULO',
+      title: language === 'en' ? 'Tarot of Dimenuous' : 'Tarô das Dimenúveis',
+      subtitle: language === 'en' ? 'A Mirror Without Anxious Predictions' : 'O Espelho sem Previsões Ansiosas',
       icon: <Sparkles className="w-8 h-8 text-purple-300" />,
       iconBg: 'from-purple-500/30 to-purple-950/40 border-purple-500/50',
-      description:
-        'Consulte o Oráculo com tiragens contemplativas de 3 cartas ou explore a galeria completa de 23 Arcanos Maiores. O Tarô reflete onde sua mente está olhando no momento.',
-      highlight: '“O baralho não prevê o futuro; ele apenas reflete onde você está olhando.”',
+      description: language === 'en'
+        ? 'Consult the Oracle with 3-card contemplative spreads or explore the full gallery of 23 Major Arcana. The Tarot reflects where your mind is looking in the present moment.'
+        : 'Consulte o Oráculo com tiragens contemplativas de 3 cartas ou explore a galeria completa de 23 Arcanos Maiores. O Tarô reflete onde sua mente está olhando no momento.',
+      highlight: language === 'en'
+        ? '“The deck does not predict the future; it merely reflects where you are looking.”'
+        : '“O baralho não prevê o futuro; ele apenas reflete onde você está olhando.”',
       targetTab: 'oraculo'
     }
   ];
@@ -90,7 +97,7 @@ export const TourModal: React.FC = () => {
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-[#c5a059]" />
             <span className="text-xs uppercase font-bold tracking-widest text-[#c5a059]">
-              GUIA DE BOAS-VINDAS À ESPIRAL
+              {language === 'en' ? 'WELCOME GUIDE TO THE SPIRAL' : 'GUIA DE BOAS-VINDAS À ESPIRAL'}
             </span>
           </div>
 
@@ -101,9 +108,9 @@ export const TourModal: React.FC = () => {
             }}
             id="skip-tour-button"
             className="px-3 py-1 rounded-md text-xs text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-colors flex items-center gap-1 font-medium"
-            title="Pular Tour"
+            title={language === 'en' ? 'Skip Tour' : 'Pular Tour'}
           >
-            <span>Pular</span>
+            <span>{language === 'en' ? 'Skip' : 'Pular'}</span>
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -111,7 +118,7 @@ export const TourModal: React.FC = () => {
         {/* Slide Graphic Badge & Icon */}
         <div className="flex flex-col items-center text-center space-y-3">
           <span className="text-[10px] font-mono tracking-widest uppercase text-[#c5a059] px-3 py-0.5 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/30">
-            {slide.badge} ({currentStep + 1} de {slides.length})
+            {slide.badge} ({currentStep + 1} {language === 'en' ? 'of' : 'de'} {slides.length})
           </span>
 
           <div
@@ -152,7 +159,7 @@ export const TourModal: React.FC = () => {
                   ? 'w-8 bg-[#c5a059]'
                   : 'w-2 bg-neutral-700 hover:bg-neutral-500'
               }`}
-              title={`Ir para slide ${idx + 1}`}
+              title={`Slide ${idx + 1}`}
             />
           ))}
         </div>
@@ -169,7 +176,7 @@ export const TourModal: React.FC = () => {
             }`}
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Anterior</span>
+            <span>{language === 'en' ? 'Previous' : 'Anterior'}</span>
           </button>
 
           <button
@@ -180,11 +187,11 @@ export const TourModal: React.FC = () => {
             {currentStep === slides.length - 1 ? (
               <>
                 <CheckCircle2 className="w-4 h-4" />
-                <span>INICIAR JORNADA</span>
+                <span>{language === 'en' ? 'BEGIN JOURNEY' : 'INICIAR JORNADA'}</span>
               </>
             ) : (
               <>
-                <span>Próximo</span>
+                <span>{language === 'en' ? 'Next' : 'Próximo'}</span>
                 <ChevronRight className="w-4 h-4" />
               </>
             )}

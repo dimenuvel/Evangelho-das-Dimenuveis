@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getGiroById } from '../data/girosData';
+import { getTranslatedGiro, getTranslatedPractice } from '../utils/dataI18n';
 import { ArrowLeft, Play, CheckCircle2, Compass, Clock, Sparkles, Share2 } from 'lucide-react';
 
 interface GiroDetailViewProps {
@@ -9,17 +10,18 @@ interface GiroDetailViewProps {
 }
 
 export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }) => {
-  const { openPracticeTimer, completedPractices, completedGiros, openGiroShareModal } = useApp();
+  const { openPracticeTimer, completedPractices, completedGiros, openGiroShareModal, t, language } = useApp();
   const [activeTab, setActivePracticeTab] = useState<'praticas' | 'transmissao'>('praticas');
 
-  const giro = getGiroById(giroId);
+  const rawGiro = getGiroById(giroId);
+  const giro = rawGiro ? getTranslatedGiro(rawGiro, language) : null;
 
   if (!giro) {
     return (
       <div className="p-8 text-center">
-        <p className="text-neutral-400">Giro não encontrado.</p>
+        <p className="text-neutral-400">{language === 'en' ? 'Turn not found.' : 'Giro não encontrado.'}</p>
         <button onClick={onBack} className="mt-4 text-[#c5a059] underline">
-          Voltar
+          {language === 'en' ? 'Back' : 'Voltar'}
         </button>
       </div>
     );
@@ -35,7 +37,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
           id="giro-detail-back-button"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Voltar para Todos os Giros</span>
+          <span>{language === 'en' ? 'Back to All Turns' : 'Voltar para Todos os Giros'}</span>
         </button>
 
         <span className="text-xs uppercase font-serif text-[#c5a059]">
@@ -62,16 +64,16 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs">
           <div className="flex flex-wrap items-center gap-3">
             <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
-              <strong className="text-[#c5a059]">Virtude:</strong> {giro.virtue}
+              <strong className="text-[#c5a059]">{language === 'en' ? 'Virtue:' : 'Virtude:'}</strong> {giro.virtue}
             </span>
             <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
-              <strong className="text-[#c5a059]">Sombra:</strong> {giro.shadow}
+              <strong className="text-[#c5a059]">{language === 'en' ? 'Shadow:' : 'Sombra:'}</strong> {giro.shadow}
             </span>
             <span className="px-3 py-1 rounded-full bg-[#07090e] border border-neutral-800 text-neutral-300">
-              <strong className="text-[#c5a059]">Ferramenta:</strong> {giro.tool}
+              <strong className="text-[#c5a059]">{language === 'en' ? 'Tool:' : 'Ferramenta:'}</strong> {giro.tool}
             </span>
             <span className="px-3 py-1 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#f3e3a2] font-bold">
-              Palavra: {giro.word}
+              {language === 'en' ? 'Word:' : 'Palavra:'} {giro.word}
             </span>
           </div>
 
@@ -83,7 +85,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
               id="share-giro-accomplishment-button"
             >
               <Share2 className="w-3.5 h-3.5 text-[#c5a059]" />
-              <span>Compartilhar Conquista</span>
+              <span>{language === 'en' ? 'Share Achievement' : 'Compartilhar Conquista'}</span>
             </button>
           )}
         </div>
@@ -99,7 +101,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
               : 'border-transparent text-neutral-400 hover:text-neutral-200'
           }`}
         >
-          Práticas do Giro ({giro.practices.length})
+          {language === 'en' ? 'Turn Practices' : 'Práticas do Giro'} ({giro.practices.length})
         </button>
 
         <button
@@ -110,7 +112,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
               : 'border-transparent text-neutral-400 hover:text-neutral-200'
           }`}
         >
-          Transmissão & Ensino
+          {language === 'en' ? 'Transmission & Teaching' : 'Transmissão & Ensino'}
         </button>
       </div>
 
@@ -118,11 +120,12 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
       {activeTab === 'praticas' && (
         <div className="space-y-4">
           <h3 className="text-sm uppercase tracking-wider text-neutral-400 font-semibold">
-            Exercícios do Giro {giro.numberRoman}
+            {language === 'en' ? 'Exercises of Turn' : 'Exercícios do Giro'} {giro.numberRoman}
           </h3>
 
           <div className="space-y-4">
-            {giro.practices.map((practice, index) => {
+            {giro.practices.map((rawPractice, index) => {
+              const practice = getTranslatedPractice(rawPractice, language);
               const isDone = completedPractices.includes(practice.id);
 
               return (
@@ -134,12 +137,12 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] uppercase px-2 py-0.5 rounded bg-[#c5a059]/20 text-[#f3e3a2] font-bold">
-                          Exercício {index + 1}
+                          {language === 'en' ? 'Exercise' : 'Exercício'} {index + 1}
                         </span>
                         {isDone && (
                           <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            Concluída
+                            {t('praticaHoje.completedTag')}
                           </span>
                         )}
                       </div>
@@ -153,7 +156,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
                       className="px-5 py-2.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#c5a059]/20 transition-all self-start sm:self-auto"
                     >
                       <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>{isDone ? 'PRATICAR NOVAMENTE' : 'INICIAR PRÁTICA'}</span>
+                      <span>{isDone ? (language === 'en' ? 'PRACTICE AGAIN' : 'PRATICAR NOVAMENTE') : t('praticaHoje.startBtn')}</span>
                     </button>
                   </div>
 
@@ -163,7 +166,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
 
                   <div className="p-3 bg-[#07090e] rounded-lg border-l-2 border-[#c5a059] text-xs text-neutral-300 leading-relaxed">
                     <p className="font-semibold text-[#f3e3a2] text-[10px] uppercase tracking-wider mb-0.5">
-                      INSTRUÇÕES DE EXECUÇÃO
+                      {language === 'en' ? 'EXECUTION INSTRUCTIONS' : 'INSTRUÇÕES DE EXECUÇÃO'}
                     </p>
                     <p>{practice.instructions}</p>
                   </div>
@@ -171,7 +174,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
                   <div className="flex items-center justify-between text-[11px] text-neutral-400 pt-2 border-t border-neutral-800">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3 text-[#c5a059]" />
-                      Duração sugerida: {practice.suggestedDurationMinutes} minutos
+                      {language === 'en' ? 'Suggested duration:' : 'Duração sugerida:'} {practice.suggestedDurationMinutes} {t('praticaHoje.min')}
                     </span>
                   </div>
                 </div>
@@ -185,10 +188,13 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
               <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none text-5xl">📖</div>
               <div className="flex items-center gap-2 text-[#f3e3a2] font-serif font-bold text-base sm:text-lg">
                 <Sparkles className="w-5 h-5 text-[#c5a059] shrink-0" />
-                <h3>Passos Avançados da Espiral</h3>
+                <h3>{language === 'en' ? 'Advanced Spiral Steps' : 'Passos Avançados da Espiral'}</h3>
               </div>
               <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed max-w-2xl">
-                Após a conclusão do 10º Giro (A Coroa / Retorno ao Centro), as etapas, rituais e aprofundamentos avançados da Espiral estão detalhados e delineados na íntegra no livro <strong className="text-[#f3e3a2]">Evangelho das Dimenúveis</strong>.
+                {language === 'en'
+                  ? 'Upon completing the 10th Turn (The Crown / Return to Center), the advanced steps, rituals, and deeper practices of the Spiral are detailed in full in the book Gospel of Dimenuous.'
+                  : 'Após a conclusão do 10º Giro (A Coroa / Retorno ao Centro), as etapas, rituais e aprofundamentos avançados da Espiral estão detalhados e delineados na íntegra no livro Evangelho das Dimenúveis.'
+                }
               </p>
             </div>
           )}
@@ -201,7 +207,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
           {/* Transmissão */}
           <div className="bg-[#0b0f19] border border-[#c5a059]/30 rounded-lg p-6 space-y-3">
             <span className="text-[10px] uppercase font-bold tracking-widest text-[#c5a059] px-2.5 py-0.5 rounded bg-[#c5a059]/20 inline-block">
-              TRANSMISSÃO CANÔNICA
+              {language === 'en' ? 'CANONICAL TRANSMISSION' : 'TRANSMISSÃO CANÔNICA'}
             </span>
             <p className="font-serif italic text-base text-neutral-200 leading-relaxed">
               "{giro.transmissaoText}"
@@ -211,7 +217,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
           {/* Insight */}
           <div className="bg-[#0b0f19] border border-neutral-800 rounded-lg p-6 space-y-3">
             <span className="text-[10px] uppercase font-bold tracking-widest text-amber-300 px-2.5 py-0.5 rounded bg-amber-950/50 border border-amber-800/50 inline-block">
-              INSIGHT DA ESPIRAL
+              {language === 'en' ? 'SPIRAL INSIGHT' : 'INSIGHT DA ESPIRAL'}
             </span>
             <p className="text-sm text-neutral-300 leading-relaxed">
               {giro.insightText}
@@ -221,7 +227,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
           {/* Versículo */}
           <div className="bg-[#0b0f19] border border-neutral-800 rounded-lg p-6 space-y-3">
             <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-300 px-2.5 py-0.5 rounded bg-indigo-950/50 border border-indigo-800/50 inline-block">
-              VERSÍCULO DO RECONHECIMENTO
+              {language === 'en' ? 'RECOGNITION VERSE' : 'VERSÍCULO DO RECONHECIMENTO'}
             </span>
             <p className="font-serif text-sm text-[#f3e3a2] italic leading-relaxed">
               "{giro.versiculoText}"
@@ -231,7 +237,7 @@ export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }
           {/* Fechamento */}
           <div className="bg-[#0b0f19] border border-neutral-800 rounded-lg p-6 space-y-3">
             <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400 px-2.5 py-0.5 rounded bg-emerald-950/50 border border-emerald-800/50 inline-block">
-              FECHAMENTO DO CARA
+              {language === 'en' ? 'CLOSING REFLECTION' : 'FECHAMENTO DO CARA'}
             </span>
             <p className="text-sm text-neutral-300 leading-relaxed">
               {giro.fechamentoText}

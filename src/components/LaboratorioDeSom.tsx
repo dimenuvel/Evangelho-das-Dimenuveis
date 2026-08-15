@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { DIMENUVEIS_SOUNDS, DimenuvelSound } from '../data/soundLabData';
+import { DIMENUVEIS_SOUNDS } from '../data/soundLabData';
+import { getTranslatedSound } from '../utils/dataI18n';
 import {
   soundLabAudioService,
   SoundLabState,
@@ -20,7 +21,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 export const LaboratorioDeSom: React.FC = () => {
-  const { theme } = useApp();
+  const { theme, t, language } = useApp();
   const isDay = theme === 'day';
 
   const [audioState, setAudioState] = useState<SoundLabState>(
@@ -36,12 +37,14 @@ export const LaboratorioDeSom: React.FC = () => {
     };
   }, []);
 
-  const activeDimenuvel =
+  const rawDimenuvel =
     DIMENUVEIS_SOUNDS.find((d) => d.id === audioState.activeDimenuvelId) ||
     DIMENUVEIS_SOUNDS[0];
 
+  const activeDimenuvel = getTranslatedSound(rawDimenuvel, language);
+
   const durationOptions: { label: string; value: DurationOption }[] = [
-    { label: 'Contínuo', value: null },
+    { label: t('som.continuous'), value: null },
     { label: '5 min', value: 5 },
     { label: '10 min', value: 10 },
     { label: '15 min', value: 15 },
@@ -52,7 +55,7 @@ export const LaboratorioDeSom: React.FC = () => {
   ];
 
   const formatRemainingTime = (totalSecs: number | null): string => {
-    if (totalSecs === null) return 'Contínuo';
+    if (totalSecs === null) return t('som.continuous');
     const mins = Math.floor(totalSecs / 60);
     const secs = totalSecs % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -95,17 +98,17 @@ export const LaboratorioDeSom: React.FC = () => {
             : 'bg-[#c5a059]/15 border-[#c5a059]/30 text-[#f3e3a2]'
         }`}>
           <Waves className={`w-3.5 h-3.5 ${isDay ? 'text-[#8a5a19]' : 'text-[#c5a059]'}`} />
-          <span>Frequências Primordiais</span>
+          <span>{t('som.badge')}</span>
         </div>
         <h1 className={`text-2xl sm:text-4xl font-serif font-bold tracking-wider uppercase ${
           isDay ? 'text-[#3d260a]' : 'text-[#f3e3a2]'
         }`}>
-          LABORATÓRIO DE SOM
+          {t('som.title')}
         </h1>
         <p className={`text-sm sm:text-base font-serif italic max-w-md mx-auto ${
           isDay ? 'text-[#5a4835]' : 'text-neutral-300'
         }`}>
-          O som como instrumento de presença.
+          {t('som.subtitle')}
         </p>
       </div>
 
@@ -132,7 +135,7 @@ export const LaboratorioDeSom: React.FC = () => {
             <span className={`text-xs uppercase tracking-widest font-mono ${
               isDay ? 'text-[#8a5a19]' : 'text-[#c5a059]'
             }`}>
-              Camada Ativa • Dimenúvel {activeDimenuvel.numberStr}
+              {t('som.activeLayer')} • {t('som.giroUnit')} {activeDimenuvel.numberStr}
             </span>
             <h2 className={`text-2xl sm:text-3xl font-serif font-bold ${
               isDay ? 'text-[#3d260a]' : 'text-[#f3e3a2]'
@@ -155,7 +158,7 @@ export const LaboratorioDeSom: React.FC = () => {
               <span className={`block text-[10px] uppercase font-mono tracking-wider ${
                 isDay ? 'text-[#7a5e3d]' : 'text-neutral-400'
               }`}>
-                Frequência
+                {t('som.frequency')}
               </span>
               <span className={`text-xl font-mono font-bold ${
                 isDay ? 'text-[#3d260a]' : 'text-[#f3e3a2]'
@@ -173,7 +176,7 @@ export const LaboratorioDeSom: React.FC = () => {
                 <span className={`text-[10px] uppercase tracking-wider font-mono font-bold ${
                   isDay ? 'text-emerald-700' : 'text-emerald-300'
                 }`}>
-                  Sessão Ativa
+                  {t('som.activeSession')}
                 </span>
               </div>
             )}
@@ -213,7 +216,7 @@ export const LaboratorioDeSom: React.FC = () => {
           <div className={`text-xs font-mono flex items-center gap-2 ${
             isDay ? 'text-[#6b5235]' : 'text-neutral-400'
           }`}>
-            <span>Batimento Binaural Contemplativo (Estéreo)</span>
+            <span>{t('som.binauralNote')}</span>
           </div>
         </div>
 
@@ -237,12 +240,12 @@ export const LaboratorioDeSom: React.FC = () => {
               {audioState.isPlaying ? (
                 <>
                   <Pause className="w-4 h-4 fill-current" />
-                  <span>Ⅱ PAUSAR</span>
+                  <span>{t('som.btnPause')}</span>
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4 fill-current ml-0.5" />
-                  <span>▶ INICIAR</span>
+                  <span>{t('som.btnPlay')}</span>
                 </>
               )}
             </button>
@@ -259,7 +262,7 @@ export const LaboratorioDeSom: React.FC = () => {
               title="Parar áudio com fade-out suave"
             >
               <Square className="w-3.5 h-3.5 fill-current" />
-              <span>PARAR</span>
+              <span>{t('som.btnStop')}</span>
             </button>
           </div>
 
@@ -268,7 +271,7 @@ export const LaboratorioDeSom: React.FC = () => {
             <span className={`text-[10px] uppercase tracking-widest font-mono block ${
               isDay ? 'text-[#7a5e3d]' : 'text-neutral-400'
             }`}>
-              Duração da Sessão
+              {t('som.sessionDuration')}
             </span>
             <div className={`text-2xl font-mono font-bold tracking-wider ${
               isDay ? 'text-[#3d260a]' : 'text-[#f3e3a2]'
@@ -298,7 +301,7 @@ export const LaboratorioDeSom: React.FC = () => {
                         />
                       </div>
                       <div className="flex items-center justify-between text-[9px] font-mono text-neutral-400">
-                        <span>{Math.round(progressPercent)}% concluído</span>
+                        <span>{Math.round(progressPercent)}% {t('som.completed')}</span>
                         <span>{audioState.durationMinutes} min</span>
                       </div>
                     </>
@@ -327,7 +330,7 @@ export const LaboratorioDeSom: React.FC = () => {
                 ) : (
                   <Volume2 className={`w-3.5 h-3.5 ${isDay ? 'text-[#8a5a19]' : 'text-[#c5a059]'}`} />
                 )}
-                <span>Volume</span>
+                <span>{t('som.volume')}</span>
               </span>
               <span className={`font-bold ${isDay ? 'text-[#3d260a]' : 'text-[#f3e3a2]'}`}>{volumePercent}%</span>
             </div>
@@ -353,7 +356,7 @@ export const LaboratorioDeSom: React.FC = () => {
           <span className={`text-xs uppercase font-mono tracking-widest block ${
             isDay ? 'text-[#8a5a19]' : 'text-[#c5a059]'
           }`}>
-            Selecione a Duração
+            {t('som.selectDuration')}
           </span>
           <div className="flex flex-wrap gap-2">
             {durationOptions.map((opt) => {
@@ -385,15 +388,16 @@ export const LaboratorioDeSom: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-mono uppercase tracking-widest text-[#c5a059] font-bold">
-            As 7 Dimenúveis Sonoras
+            {language === 'en' ? 'The 7 Sound Dimenuous' : 'As 7 Dimenúveis Sonoras'}
           </h3>
           <span className="text-xs text-neutral-400 font-serif italic">
-            Toque para selecionar a camada ativa
+            {language === 'en' ? 'Tap to select active layer' : 'Toque para selecionar a camada ativa'}
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
-          {DIMENUVEIS_SOUNDS.map((sound) => {
+          {DIMENUVEIS_SOUNDS.map((rawSound) => {
+            const sound = getTranslatedSound(rawSound, language);
             const isSelected = audioState.activeDimenuvelId === sound.id;
             const isThisPlaying = isSelected && audioState.isPlaying;
             const c = sound.color;
@@ -458,7 +462,7 @@ export const LaboratorioDeSom: React.FC = () => {
                       title="Pausar esta camada"
                     >
                       <Pause className="w-3.5 h-3.5 fill-current" />
-                      <span>Pausar</span>
+                      <span>{t('som.cardPause')}</span>
                     </button>
                   ) : (
                     <button
@@ -475,7 +479,7 @@ export const LaboratorioDeSom: React.FC = () => {
                       title="Tocar esta camada"
                     >
                       <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                      <span>Tocar</span>
+                      <span>{t('som.cardPlay')}</span>
                     </button>
                   )}
 
@@ -500,11 +504,13 @@ export const LaboratorioDeSom: React.FC = () => {
       <div className="p-4 rounded-xl bg-neutral-900/50 border border-[#c5a059]/20 text-xs text-neutral-400 font-serif leading-relaxed space-y-1.5">
         <div className="flex items-center gap-2 text-[#c5a059] font-mono uppercase text-[11px] font-bold">
           <Info className="w-4 h-4 shrink-0" />
-          <span>Uso Recomendado</span>
+          <span>{language === 'en' ? 'Recommended Use' : 'Uso Recomendado'}</span>
         </div>
         <p>
-          Utilize fones de ouvido estéreo para usufruir da ressonância de batimento binaural. 
-          O som continua tocando em segundo plano enquanto você navega pelos textos e práticas do aplicativo.
+          {language === 'en'
+            ? 'Use stereo headphones to experience the binaural beat resonance. Sound continues playing in the background as you browse app features.'
+            : 'Utilize fones de ouvido estéreo para usufruir da ressonância de batimento binaural. O som continua tocando em segundo plano enquanto você navega pelos textos e práticas do aplicativo.'
+          }
         </p>
       </div>
     </div>

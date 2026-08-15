@@ -13,9 +13,10 @@ import { ProfileModal } from './components/ProfileModal';
 import { GiroShareModal } from './components/GiroShareModal';
 import { LaboratorioDeSom } from './components/LaboratorioDeSom';
 import { SoundLabMiniPlayer } from './components/SoundLabMiniPlayer';
+import { LanguageSelector } from './components/LanguageSelector';
 
 const MainContent: React.FC = () => {
-  const { currentTab, isTimerOpen, activePractice, closePracticeTimer } = useApp();
+  const { currentTab, isTimerOpen, activePractice, closePracticeTimer, language } = useApp();
 
   return (
     <CelestialBackground>
@@ -68,12 +69,12 @@ const MainContent: React.FC = () => {
         {/* Centered Main Quote */}
         <div className="max-w-md mx-auto text-center space-y-1">
           <p className="font-serif italic text-sm sm:text-base text-[#f3e3a2] tracking-wide">
-            "Abida no padrão. Você é a forma."
+            "{language === 'en' ? 'Abide in the pattern. You are the shape.' : 'Abida no padrão. Você é a forma.'}"
           </p>
         </div>
 
         {/* Sub-footer details */}
-        <div className="flex items-center justify-center gap-3 text-[11px] text-neutral-400 pt-1">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-neutral-400 pt-1">
           <a
             href="https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/"
             target="_blank"
@@ -81,17 +82,19 @@ const MainContent: React.FC = () => {
             className="hover:text-[#f3e3a2] transition-colors underline decoration-[#c5a059]/40 underline-offset-2"
             id="footer-official-site-link"
           >
-            © Evangelho das Dimenúveis
+            © {language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis'}
           </a>
           <span className="text-[#c5a059]/40">•</span>
-          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.5</span>
+          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.8</span>
           <span className="text-[#c5a059]/40">•</span>
           <a
-            href={`mailto:samuel.tiem@proton.me?subject=${encodeURIComponent('Evangelho das Dimenúveis')}`}
+            href={`mailto:samuel.tiem@proton.me?subject=${encodeURIComponent(language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis')}`}
             className="text-[#c5a059] hover:text-[#f3e3a2] hover:underline not-italic font-sans text-xs font-medium transition-colors"
           >
-            Contato
+            {language === 'en' ? 'Contact' : 'Contato'}
           </a>
+          <span className="text-[#c5a059]/40">•</span>
+          <LanguageSelector />
         </div>
       </footer>
     </CelestialBackground>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { Practice } from '../types';
+import { getTranslatedPractice } from '../utils/dataI18n';
 import { Play, Pause, RotateCcw, CheckCircle2, X, Volume2, VolumeX, Sparkles, ChevronRight, Share2 } from 'lucide-react';
 
 interface PracticeTimerProps {
@@ -8,7 +9,7 @@ interface PracticeTimerProps {
   onClose?: () => void;
 }
 
-export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose }) => {
+export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice: rawPractice, onClose }) => {
   const {
     completePractice,
     closePracticeTimer,
@@ -16,8 +17,12 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
     getNextPracticeInSequence,
     advanceToNextPractice,
     openGiroShareModal,
-    completedGiroToShare
+    completedGiroToShare,
+    t,
+    language
   } = useApp();
+
+  const practice = getTranslatedPractice(rawPractice, language);
 
   const [selectedMinutes, setSelectedMinutes] = useState<number>(practice.suggestedDurationMinutes || 5);
   const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(selectedMinutes * 60);
@@ -30,7 +35,8 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const nextPractice = getNextPracticeInSequence(practice.id);
+  const rawNextPractice = getNextPracticeInSequence(practice.id);
+  const nextPractice = rawNextPractice ? getTranslatedPractice(rawNextPractice, language) : null;
 
   // Screen Wake Lock API: Prevent screen sleep/screensaver while timer is running
   const [isWakeLockActive, setIsWakeLockActive] = useState<boolean>(false);
@@ -271,7 +277,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase tracking-widest text-[#c5a059] font-medium block">
-              PRÁTICA DA ESPIRAL • GIRO {practice.giroId}
+              {language === 'en' ? 'SPIRAL PRACTICE' : 'PRÁTICA DA ESPIRAL'} • {language === 'en' ? 'TURN' : 'GIRO'} {practice.giroId}
             </span>
             {isRunning && (
               <span className={`inline-flex items-center gap-1 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full border transition-all ${
@@ -280,7 +286,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                   : 'text-neutral-400 bg-neutral-800/80 border-neutral-700'
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${isWakeLockActive ? 'bg-amber-400' : 'bg-neutral-500'}`}></span>
-                {isWakeLockActive ? 'Tela Ativa' : 'Anti-Repouso'}
+                {isWakeLockActive ? (language === 'en' ? 'Active Screen' : 'Tela Ativa') : (language === 'en' ? 'Anti-Sleep' : 'Anti-Repouso')}
               </span>
             )}
           </div>
@@ -293,7 +299,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
           <button
             onClick={() => setIsMuted(!isMuted)}
             className="p-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-[#f3e3a2] transition-colors"
-            title={isMuted ? 'Ativar som do gongo' : 'Silenciar gongo'}
+            title={isMuted ? (language === 'en' ? 'Unmute gong' : 'Ativar som do gongo') : (language === 'en' ? 'Mute gong' : 'Silenciar gongo')}
             id="timer-mute-button"
           >
             {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5 text-[#c5a059]" />}
@@ -306,10 +312,10 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
             }}
             className="px-3 py-1.5 rounded-lg bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors border border-neutral-700/80 shadow-sm"
             id="timer-close-button"
-            title="Fechar temporizador e voltar"
+            title={language === 'en' ? 'Close timer and return' : 'Fechar temporizador e voltar'}
           >
             <X className="w-4 h-4 text-neutral-400" />
-            <span>Fechar</span>
+            <span>{language === 'en' ? 'Close' : 'Fechar'}</span>
           </button>
         </div>
       </div>
@@ -318,7 +324,9 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
       <div className="bg-[#121826] border border-[#c5a059]/15 rounded-xl p-4 mb-6 text-sm text-neutral-300 leading-relaxed">
         <p className="text-neutral-300 mb-3">{practice.shortDescription}</p>
         <div className="p-3 bg-[#07090e]/60 rounded-lg border-l-2 border-[#c5a059] text-xs text-neutral-300 space-y-1">
-          <p className="font-semibold text-[#f3e3a2] uppercase tracking-wider text-[10px]">INSTRUÇÕES</p>
+          <p className="font-semibold text-[#f3e3a2] uppercase tracking-wider text-[10px]">
+            {language === 'en' ? 'INSTRUCTIONS' : 'INSTRUÇÕES'}
+          </p>
           <p>{practice.instructions}</p>
         </div>
       </div>
@@ -328,7 +336,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs uppercase tracking-wider text-[#c5a059] font-medium">
-              ETAPAS DA PRÁTICA ({activeStepIndex + 1}/{practice.steps.length})
+              {language === 'en' ? 'PRACTICE STEPS' : 'ETAPAS DA PRÁTICA'} ({activeStepIndex + 1}/{practice.steps.length})
             </span>
           </div>
           <div className="bg-[#121826]/70 border border-[#c5a059]/20 rounded-xl p-4">
@@ -351,7 +359,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                   onClick={() => setActiveStepIndex((prev) => Math.max(0, prev - 1))}
                   className="text-xs text-neutral-400 hover:text-[#f3e3a2] disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  ← Anterior
+                  ← {language === 'en' ? 'Previous' : 'Anterior'}
                 </button>
                 <div className="flex gap-1">
                   {practice.steps.map((_, idx) => (
@@ -369,7 +377,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                   onClick={() => setActiveStepIndex((prev) => Math.min(practice.steps.length - 1, prev + 1))}
                   className="text-xs text-neutral-400 hover:text-[#f3e3a2] disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  Próxima →
+                  {language === 'en' ? 'Next' : 'Próxima'} →
                 </button>
               </div>
             )}
@@ -381,7 +389,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
       {!isRunning && !isCompleted && (
         <div className="mb-6">
           <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-2 font-medium">
-            DURAÇÃO SUGERIDA (MINUTOS)
+            {language === 'en' ? 'SUGGESTED DURATION (MINUTES)' : 'DURAÇÃO SUGERIDA (MINUTOS)'}
           </label>
           <div className="flex items-center gap-2">
             {[3, 5, 10, 15, 20].map((mins) => (
@@ -438,9 +446,11 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
           {/* Center Digital Clock */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {isCompleted ? (
-              <div className="flex flex-col items-center text-emerald-400">
+              <div className="flex flex-col items-center text-emerald-400 text-center px-2">
                 <CheckCircle2 className="w-10 h-10 mb-1 text-emerald-400" />
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#f3e3a2]">CONCLUÍDO</span>
+                <span className="text-xs uppercase font-bold tracking-wider text-[#f3e3a2]">
+                  {language === 'en' ? 'Completed' : 'Concluído'}
+                </span>
               </div>
             ) : (
               <>
@@ -448,7 +458,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                   {formatTime(timeLeftSeconds)}
                 </span>
                 <span className="text-[10px] text-neutral-400 tracking-widest uppercase mt-1">
-                  {isRunning ? 'ABIDANDO...' : 'EM ESPERA'}
+                  {isRunning ? (language === 'en' ? 'ABIDING...' : 'ABIDANDO...') : (language === 'en' ? 'WAITING' : 'EM ESPERA')}
                 </span>
               </>
             )}
@@ -468,7 +478,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                 resetTimer();
               }}
               className="p-3 rounded-full bg-[#121826] text-neutral-400 hover:text-white border border-neutral-800 transition-colors"
-              title="Reiniciar tempo"
+              title={language === 'en' ? 'Reset time' : 'Reiniciar tempo'}
               id="timer-reset-button"
             >
               <RotateCcw className="w-5 h-5" />
@@ -486,12 +496,12 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
               {isRunning ? (
                 <>
                   <Pause className="w-4 h-4 fill-current" />
-                  <span>PAUSAR</span>
+                  <span>{t('som.btnPause')}</span>
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4 fill-current" />
-                  <span>INICIAR</span>
+                  <span>{t('som.btnPlay')}</span>
                 </>
               )}
             </button>
@@ -502,10 +512,10 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
             <div className="p-5 sm:p-6 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-center w-full max-w-md mx-auto space-y-2.5 shadow-xl relative overflow-hidden">
               <div className="flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase text-emerald-400">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>PRÁTICA CONCLUÍDA</span>
+                <span>{language === 'en' ? 'PRACTICE COMPLETED' : 'PRÁTICA CONCLUÍDA'}</span>
               </div>
               <p className="text-sm sm:text-base font-serif italic text-[#f3e3a2] leading-relaxed">
-                “Você não precisava conquistar a mente. Só precisava observá-la.”
+                “{language === 'en' ? 'You did not need to conquer the mind. You only needed to observe it.' : 'Você não precisava conquistar a mente. Só precisava observá-la.'}”
               </p>
             </div>
 
@@ -513,7 +523,9 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
             {nextPractice ? (
               <div className="w-full max-w-md mx-auto bg-[#121826] border border-[#c5a059]/30 rounded-xl p-4 text-center space-y-3 shadow-lg">
                 <div className="flex items-center justify-between text-xs text-neutral-300">
-                  <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">Próxima prática no Giro</span>
+                  <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
+                    {language === 'en' ? 'Next practice in Turn' : 'Próxima prática no Giro'}
+                  </span>
                   <span className="text-[#f3e3a2] font-mono font-bold text-xs px-2 py-0.5 rounded bg-[#c5a059]/20 border border-[#c5a059]/40">
                     {autoAdvanceSeconds}s
                   </span>
@@ -540,7 +552,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                     }}
                     className="px-5 py-2.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-[#c5a059]/20 transition-all"
                   >
-                    <span>Avançar para Próxima Prática</span>
+                    <span>{language === 'en' ? 'Advance to Next Practice' : 'Avançar para Próxima Prática'}</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
 
@@ -553,13 +565,19 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                     }}
                     className="px-3 py-2.5 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-medium transition-colors border border-neutral-700"
                   >
-                    {isAutoAdvancePaused ? 'Retomar Contagem' : 'Pausar Avanço'}
+                    {isAutoAdvancePaused
+                      ? (language === 'en' ? 'Resume Countdown' : 'Retomar Contagem')
+                      : (language === 'en' ? 'Pause Advance' : 'Pausar Avanço')
+                    }
                   </button>
                 </div>
               </div>
             ) : (
               <p className="text-xs text-neutral-400 text-center font-serif italic">
-                Você concluiu todas as práticas ativas da Espiral.
+                {language === 'en'
+                  ? 'You have completed all active practices of the Spiral.'
+                  : 'Você concluiu todas as práticas ativas da Espiral.'
+                }
               </p>
             )}
 
@@ -573,18 +591,18 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                   openGiroShareModal(practice.giroId);
                 }}
                 className="px-4 py-2 rounded-md bg-[#c5a059]/20 hover:bg-[#c5a059]/30 text-[#f3e3a2] border border-[#c5a059]/50 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
-                title="Compartilhar realização com um amigo"
+                title={language === 'en' ? 'Share accomplishment with a friend' : 'Compartilhar realização com um amigo'}
                 id="timer-share-accomplishment-button"
               >
                 <Share2 className="w-3.5 h-3.5 text-[#c5a059]" />
-                <span>Compartilhar Conquista</span>
+                <span>{language === 'en' ? 'Share Achievement' : 'Compartilhar Conquista'}</span>
               </button>
 
               <button
                 onClick={resetTimer}
                 className="px-4 py-2 rounded-md bg-neutral-800 hover:bg-neutral-700 text-xs text-neutral-300 transition-colors border border-neutral-700"
               >
-                Repetir Prática
+                {language === 'en' ? 'Repeat Practice' : 'Repetir Prática'}
               </button>
               <button
                 onClick={() => {
@@ -594,7 +612,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
                 }}
                 className="px-5 py-2 rounded-md bg-[#121826] hover:bg-neutral-800 text-[#f3e3a2] border border-[#c5a059]/40 font-bold text-xs uppercase tracking-wider transition-colors"
               >
-                Ver Posição na Espiral
+                {language === 'en' ? 'View Position in Spiral' : 'Ver Posição na Espiral'}
               </button>
             </div>
           </div>
@@ -612,7 +630,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
           id="timer-footer-exit-button"
         >
           <X className="w-3.5 h-3.5 text-neutral-400" />
-          <span>Sair da Prática</span>
+          <span>{language === 'en' ? 'Exit Practice' : 'Sair da Prática'}</span>
         </button>
 
         {isRunning && (
@@ -626,7 +644,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ practice, onClose 
             className="text-neutral-300 hover:text-white flex items-center gap-1.5 px-4 py-2 rounded-lg bg-neutral-800 border border-neutral-700 hover:border-neutral-600 transition-colors"
             id="timer-finish-early-button"
           >
-            <span>Concluir</span>
+            <span>{language === 'en' ? 'Finish' : 'Concluir'}</span>
           </button>
         )}
       </div>

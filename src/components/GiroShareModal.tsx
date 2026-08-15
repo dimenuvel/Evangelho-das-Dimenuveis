@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getGiroById } from '../data/girosData';
+import { getTranslatedGiro } from '../utils/dataI18n';
 import {
   Share2,
   Copy,
@@ -17,43 +18,33 @@ import {
 const OFFICIAL_GITHUB_URL = 'https://dimenuvel.github.io/Evangelho-das-Dimenuveis-site/';
 
 export const GiroShareModal: React.FC = () => {
-  const { completedGiroToShare, closeGiroShareModal, activeProfile } = useApp();
+  const { completedGiroToShare, closeGiroShareModal, activeProfile, language } = useApp();
   const [copied, setCopied] = useState(false);
 
   if (completedGiroToShare === null) {
     return null;
   }
 
-  const giro = getGiroById(completedGiroToShare);
-  if (!giro) {
+  const rawGiro = getGiroById(completedGiroToShare);
+  if (!rawGiro) {
     return null;
   }
 
-  const practitionerName = activeProfile?.name ? activeProfile.name : 'Praticante';
+  const giro = getTranslatedGiro(rawGiro, language);
+
+  const practitionerName = activeProfile?.name
+    ? activeProfile.name
+    : (language === 'en' ? 'Practitioner' : 'Praticante');
   const isFullSpiral = completedGiroToShare === 10;
 
   // Generate share message for messaging app, social media, or email
   const generatedMessage = isFullSpiral
-    ? `✨ Realização na Espiral do Evangelho das Dimenúveis ✨
-
-Eu, ${practitionerName}, concluí TODOS OS 10 GIROS DA ESPIRAL no aplicativo do Evangelho das Dimenúveis!
-
-O Evangelho das Dimenúveis é um caminho contemplativo de autoconhecimento, presença e metagnose — um convite para refletir, exercitar o silêncio e reconhecer as dimensões do ser com total liberdade, sem dogmas ou julgamentos.
-
-Você também pode participar desta jornada e iniciar suas próprias práticas da Espiral! Conheça o projeto oficial e participe através do site:
-${OFFICIAL_GITHUB_URL}
-
-"Antes do Silêncio, não havia palavra... A Espiral abida."`
-    : `🌀 Realização no Evangelho das Dimenúveis 🌀
-
-Eu, ${practitionerName}, concluí o Giro ${giro.numberRoman} — ${giro.title} (${giro.dimension}) no aplicativo do Evangelho das Dimenúveis!
-
-O Evangelho das Dimenúveis é um caminho contemplativo de autoconhecimento, presença e metagnose — um convite para refletir, exercitar o silêncio e reconhecer as dimensões do ser com total liberdade, sem dogmas ou julgamentos.
-
-Você também pode participar desta jornada e iniciar suas próprias práticas da Espiral! Conheça o projeto e participe através do site oficial:
-${OFFICIAL_GITHUB_URL}
-
-"Antes do Silêncio, não havia palavra... A Espiral abida."`;
+    ? language === 'en'
+      ? `✨ Achievement in the Spiral of the Gospel of Dimenuous ✨\n\nI, ${practitionerName}, completed ALL 10 TURNS OF THE SPIRAL in the Gospel of Dimenuous app!\n\nThe Gospel of Dimenuous is a contemplative path of self-knowledge, presence, and metagnoia — an invitation to reflect, practice silence, and recognize the dimensions of being with complete freedom, without dogmas or judgment.\n\nYou can also join this journey and begin your own Spiral practices! Discover the project on the official site:\n${OFFICIAL_GITHUB_URL}\n\n"Before Silence, there was no word... The Spiral abides."`
+      : `✨ Realização na Espiral do Evangelho das Dimenúveis ✨\n\nEu, ${practitionerName}, concluí TODOS OS 10 GIROS DA ESPIRAL no aplicativo do Evangelho das Dimenúveis!\n\nO Evangelho das Dimenúveis é um caminho contemplativo de autoconhecimento, presença e metagnose — um convite para refletir, exercitar o silêncio e reconhecer as dimensões do ser com total liberdade, sem dogmas ou julgamentos.\n\nVocê também pode participar desta jornada e iniciar suas próprias práticas da Espiral! Conheça o projeto oficial e participe através do site:\n${OFFICIAL_GITHUB_URL}\n\n"Antes do Silêncio, não havia palavra... A Espiral abida."`
+    : language === 'en'
+      ? `🌀 Achievement in the Gospel of Dimenuous 🌀\n\nI, ${practitionerName}, completed Turn ${giro.numberRoman} — ${giro.title} (${giro.dimension}) in the Gospel of Dimenuous app!\n\nThe Gospel of Dimenuous is a contemplative path of self-knowledge, presence, and metagnoia — an invitation to reflect, practice silence, and recognize the dimensions of being with complete freedom, without dogmas or judgment.\n\nYou can also join this journey and begin your own Spiral practices! Discover the project on the official site:\n${OFFICIAL_GITHUB_URL}\n\n"Before Silence, there was no word... The Spiral abides."`
+      : `🌀 Realização no Evangelho das Dimenúveis 🌀\n\nEu, ${practitionerName}, concluí o Giro ${giro.numberRoman} — ${giro.title} (${giro.dimension}) no aplicativo do Evangelho das Dimenúveis!\n\nO Evangelho das Dimenúveis é um caminho contemplativo de autoconhecimento, presença e metagnose — um convite para refletir, exercitar o silêncio e reconhecer as dimensões do ser com total liberdade, sem dogmas ou julgamentos.\n\nVocê também pode participar desta jornada e iniciar suas próprias práticas da Espiral! Conheça o projeto e participe através do site oficial:\n${OFFICIAL_GITHUB_URL}\n\n"Antes do Silêncio, não havia palavra... A Espiral abida."`;
 
   const handleCopy = async () => {
     try {
@@ -76,7 +67,9 @@ ${OFFICIAL_GITHUB_URL}
   };
 
   const handleEmail = () => {
-    const subject = `Realização no Evangelho das Dimenúveis — Giro ${giro.numberRoman}`;
+    const subject = language === 'en'
+      ? `Achievement in the Gospel of Dimenuous — Turn ${giro.numberRoman}`
+      : `Realização no Evangelho das Dimenúveis — Giro ${giro.numberRoman}`;
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(generatedMessage)}`;
     window.open(mailtoUrl, '_blank');
   };
@@ -85,7 +78,9 @@ ${OFFICIAL_GITHUB_URL}
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
         await navigator.share({
-          title: `Realização no Evangelho das Dimenúveis — Giro ${giro.numberRoman}`,
+          title: language === 'en'
+            ? `Achievement in the Gospel of Dimenuous — Turn ${giro.numberRoman}`
+            : `Realização no Evangelho das Dimenúveis — Giro ${giro.numberRoman}`,
           text: generatedMessage,
           url: OFFICIAL_GITHUB_URL
         });
@@ -111,7 +106,7 @@ ${OFFICIAL_GITHUB_URL}
         <button
           onClick={closeGiroShareModal}
           className="absolute top-4 right-4 p-2 rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-colors"
-          title="Fechar"
+          title={language === 'en' ? 'Close' : 'Fechar'}
           id="close-giro-share-modal-button"
         >
           <X className="w-5 h-5" />
@@ -121,15 +116,27 @@ ${OFFICIAL_GITHUB_URL}
         <div className="text-center space-y-2 pt-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#f3e3a2] text-xs font-bold tracking-widest uppercase">
             <Trophy className="w-4 h-4 text-[#c5a059]" />
-            <span>{isFullSpiral ? 'ESPIRAL COMPLETA' : 'GIRO CONCLUÍDO'}</span>
+            <span>
+              {isFullSpiral
+                ? (language === 'en' ? 'SPIRAL COMPLETED' : 'ESPIRAL COMPLETA')
+                : (language === 'en' ? 'TURN COMPLETED' : 'GIRO CONCLUÍDO')}
+            </span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-wide">
-            Parabéns, {practitionerName}!
+            {language === 'en' ? `Congratulations, ${practitionerName}!` : `Parabéns, ${practitionerName}!`}
           </h2>
 
           <p className="text-xs sm:text-sm text-neutral-300 max-w-md mx-auto leading-relaxed">
-            Você concluiu o <strong className="text-[#f3e3a2]">Giro {giro.numberRoman} — {giro.title}</strong>! Deseja compartilhar sua realização e convidar um amigo para participar do Evangelho?
+            {language === 'en' ? (
+              <>
+                You completed <strong className="text-[#f3e3a2]">Turn {giro.numberRoman} — {giro.title}</strong>! Would you like to share your achievement and invite a friend to join the Gospel?
+              </>
+            ) : (
+              <>
+                Você concluiu o <strong className="text-[#f3e3a2]">Giro {giro.numberRoman} — {giro.title}</strong>! Deseja compartilhar sua realização e convidar um amigo para participar do Evangelho?
+              </>
+            )}
           </p>
         </div>
 
@@ -138,7 +145,7 @@ ${OFFICIAL_GITHUB_URL}
           <div className="flex items-center justify-between text-xs text-neutral-300">
             <span className="font-semibold uppercase tracking-wider text-[11px] text-[#c5a059] flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-[#c5a059]" />
-              Mensagem para Envio / Compartilhamento:
+              {language === 'en' ? 'Message for Sending / Sharing:' : 'Mensagem para Envio / Compartilhamento:'}
             </span>
 
             <button
@@ -152,12 +159,12 @@ ${OFFICIAL_GITHUB_URL}
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>Copiado!</span>
+                  <span>{language === 'en' ? 'Copied!' : 'Copiado!'}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5" />
-                  <span>Copiar Mensagem</span>
+                  <span>{language === 'en' ? 'Copy Message' : 'Copiar Mensagem'}</span>
                 </>
               )}
             </button>
@@ -176,7 +183,7 @@ ${OFFICIAL_GITHUB_URL}
         {/* Quick Share Buttons */}
         <div className="space-y-2.5">
           <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 block text-center">
-            Compartilhar via aplicativo ou e-mail:
+            {language === 'en' ? 'Share via app or email:' : 'Compartilhar via aplicativo ou e-mail:'}
           </span>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -210,7 +217,7 @@ ${OFFICIAL_GITHUB_URL}
                 className="px-3 py-2.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
               >
                 <Share2 className="w-4 h-4" />
-                <span>Outros</span>
+                <span>{language === 'en' ? 'Others' : 'Outros'}</span>
               </button>
             ) : (
               <button
@@ -218,7 +225,7 @@ ${OFFICIAL_GITHUB_URL}
                 className="px-3 py-2.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
               >
                 <Copy className="w-4 h-4" />
-                <span>Copiar</span>
+                <span>{language === 'en' ? 'Copy' : 'Copiar'}</span>
               </button>
             )}
           </div>
@@ -233,7 +240,7 @@ ${OFFICIAL_GITHUB_URL}
             className="w-full py-2.5 px-4 rounded-xl bg-[#07090e]/80 hover:bg-[#121826] border border-[#c5a059]/40 text-[#f3e3a2] font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm"
             id="visit-official-site-button"
           >
-            <span>Visitar Página Oficial no GitHub</span>
+            <span>{language === 'en' ? 'Visit Official Page on GitHub' : 'Visitar Página Oficial no GitHub'}</span>
             <ExternalLink className="w-3.5 h-3.5 text-[#c5a059]" />
           </a>
         </div>
@@ -245,7 +252,7 @@ ${OFFICIAL_GITHUB_URL}
             className="px-8 py-3 rounded-full bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#c5a059]/20 transition-all hover:scale-105"
             id="close-giro-share-modal-footer"
           >
-            Continuar na Espiral
+            {language === 'en' ? 'Continue in the Spiral' : 'Continuar na Espiral'}
           </button>
         </div>
       </div>
