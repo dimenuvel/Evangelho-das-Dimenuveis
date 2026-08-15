@@ -110,17 +110,17 @@ export const LaboratorioDeSom: React.FC = () => {
       </div>
 
       {/* Main Active Sound Display Card */}
-      <div className={`relative border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-hidden ${
+      <div className={`relative border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-hidden transition-colors duration-500 ${
         isDay
-          ? 'bg-gradient-to-b from-[#fdfbf7] via-[#f7eee1] to-[#eee2d0] border-[#d1b88a] text-[#2c1e0e]'
-          : 'bg-gradient-to-b from-[#18130a] via-[#120e07] to-[#0a0703] border-[#c5a059]/40 text-neutral-200'
+          ? `${activeDimenuvel.color.daySelectedBg} ${activeDimenuvel.color.dayBorder} text-[#2c1e0e]`
+          : `${activeDimenuvel.color.nightSelectedBg} ${activeDimenuvel.color.nightBorder} text-neutral-200`
       }`}>
-        {/* Subtle background glow when playing */}
+        {/* Subtle layer color background glow when playing */}
         <div
           className={`absolute inset-0 bg-radial pointer-events-none transition-opacity duration-1000 ${
-            isDay ? 'from-[#d9a036]/20' : 'from-[#c5a059]/15'
+            isDay ? activeDimenuvel.color.dayGlow : activeDimenuvel.color.nightGlow
           } via-transparent to-transparent ${
-            audioState.isPlaying ? 'opacity-100' : 'opacity-0'
+            audioState.isPlaying ? 'opacity-100' : 'opacity-40'
           }`}
         />
 
@@ -396,50 +396,53 @@ export const LaboratorioDeSom: React.FC = () => {
           {DIMENUVEIS_SOUNDS.map((sound) => {
             const isSelected = audioState.activeDimenuvelId === sound.id;
             const isThisPlaying = isSelected && audioState.isPlaying;
+            const c = sound.color;
+
+            const cardBgClass = isSelected
+              ? isDay
+                ? `${c.daySelectedBg} ${c.dayBorder} ${c.dayTextTitle} shadow-md`
+                : `${c.nightSelectedBg} ${c.nightBorder} ${c.nightTextTitle} shadow-lg`
+              : isDay
+                ? `${c.dayUnselectedBg} ${c.dayBorder} ${c.dayTextTitle} shadow-sm`
+                : `${c.nightUnselectedBg} ${c.nightBorder} ${c.nightTextTitle}`;
 
             return (
               <div
                 key={sound.id}
                 onClick={() => handleSelectDimenuvel(sound.id)}
                 id={`dimenuvel-sound-card-${sound.id}`}
-                className={`group text-left p-4 rounded-xl border transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
-                  isSelected
-                    ? isDay
-                      ? 'bg-[#f5e8d3] border-[#8a5a19] text-[#3d260a] shadow-md'
-                      : 'bg-[#c5a059]/15 border-[#c5a059] text-[#f3e3a2] shadow-lg shadow-[#c5a059]/10'
-                    : isDay
-                      ? 'bg-white border-[#d1b88a] text-[#2c1e0e] shadow-sm hover:border-[#8a5a19]'
-                      : 'bg-neutral-900/80 border-neutral-800/90 hover:border-[#c5a059]/40 text-neutral-300 hover:bg-neutral-800/60'
-                }`}
+                className={`group text-left p-4 rounded-xl border transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${cardBgClass}`}
               >
-                {/* Active highlight marker */}
-                {isSelected && (
-                  <div className={`absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl pointer-events-none rounded-bl-full ${
-                    isDay ? 'from-[#8a5a19]/30' : 'from-[#c5a059]/30'
-                  } to-transparent`} />
-                )}
+                {/* Active layer color glow corner */}
+                <div
+                  className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl pointer-events-none rounded-bl-full transition-opacity duration-300 ${
+                    isDay ? c.dayGlow : c.nightGlow
+                  } to-transparent ${isSelected ? 'opacity-100' : 'opacity-40 group-hover:opacity-75'}`}
+                />
 
-                <div className="space-y-1">
+                <div className="space-y-1 relative z-10">
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs font-mono font-bold ${isDay ? 'text-[#8a5a19]' : 'text-[#c5a059]'}`}>
+                    <span className={`text-xs font-mono font-bold ${isDay ? c.dayTextNumber : c.nightTextNumber}`}>
                       {sound.numberStr}
                     </span>
-                    <span className={`text-xs font-mono font-bold ${isDay ? 'text-[#5a3810]' : 'text-neutral-400 group-hover:text-[#f3e3a2]'} transition-colors`}>
+                    <span className={`text-xs font-mono font-bold ${isDay ? c.dayTextNumber : c.nightTextNumber}`}>
                       {sound.frequency} Hz
                     </span>
                   </div>
-                  <h4 className={`text-base font-serif font-bold ${isDay ? 'text-[#3d260a]' : 'text-[#f3e3a2]'}`}>
+                  <h4 className={`text-base font-serif font-bold ${isDay ? c.dayTextTitle : c.nightTextTitle}`}>
                     {sound.name}
                   </h4>
                 </div>
 
-                <p className={`text-[11px] font-serif italic mt-3 line-clamp-2 ${isDay ? 'text-[#5a4835]' : 'text-neutral-400'}`}>
+                <p className={`text-[11px] font-serif italic mt-3 line-clamp-2 relative z-10 ${
+                  isDay ? 'text-stone-700' : 'text-neutral-300/80'
+                }`}>
                   {sound.description}
                 </p>
 
                 {/* Layer Action Button Container */}
-                <div className={`mt-4 pt-3 border-t flex items-center justify-between gap-2 ${
-                  isDay ? 'border-[#d1b88a]/50' : 'border-[#c5a059]/20'
+                <div className={`mt-4 pt-3 border-t flex items-center justify-between gap-2 relative z-10 ${
+                  isDay ? 'border-stone-400/30' : 'border-white/10'
                 }`}>
                   {isThisPlaying ? (
                     <button
@@ -467,27 +470,21 @@ export const LaboratorioDeSom: React.FC = () => {
                         soundLabAudioService.play();
                       }}
                       className={`px-3.5 py-1.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md ${
-                        isSelected
-                          ? isDay
-                            ? 'bg-gradient-to-r from-[#d9a036] to-[#eac266] hover:from-[#c28e28] hover:to-[#dfb559] text-[#241706] border border-[#a87a20]'
-                            : 'bg-gradient-to-r from-[#c5a059] to-[#e5c158] text-black hover:brightness-110'
-                          : isDay
-                            ? 'bg-[#f0d8a8] hover:bg-[#e2c48e] text-[#3d260a] border border-[#c59a48]'
-                            : 'bg-[#c5a059]/20 hover:bg-[#c5a059]/40 text-[#f3e3a2] border border-[#c5a059]/50'
+                        isDay ? c.dayBtnPlay : c.nightBtnPlay
                       }`}
                       title="Tocar esta camada"
                     >
-                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                       <span>Tocar</span>
                     </button>
                   )}
 
                   {isThisPlaying && (
                     <span className={`flex items-center gap-1 text-[10px] font-mono font-bold ${
-                      isDay ? 'text-[#8a5a19]' : 'text-emerald-400'
+                      isDay ? c.dayTextNumber : c.nightTextNumber
                     }`}>
                       <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                        isDay ? 'bg-[#8a5a19]' : 'bg-emerald-400'
+                        isDay ? 'bg-emerald-600' : 'bg-emerald-400'
                       }`} />
                       <Waves className="w-3.5 h-3.5" />
                     </span>
