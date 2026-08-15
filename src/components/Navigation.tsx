@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { NavigationTab } from '../types';
-import { Sparkles, Compass, Flame, BookOpen, Disc, HelpCircle, Image as ImageIcon, Sun, Moon } from 'lucide-react';
+import { Sparkles, Compass, Flame, BookOpen, Disc, HelpCircle, Image as ImageIcon, Sun, Moon, Waves } from 'lucide-react';
 import { SpiralIcon } from './SpiralIcon';
 import { motion } from 'motion/react';
 
@@ -13,6 +13,7 @@ export const Navigation: React.FC = () => {
   const navItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'home', label: 'Início', icon: <Disc className="w-5 h-5" /> },
     { id: 'espiral', label: 'A Espiral', icon: <Compass className="w-5 h-5" />, badge: `Giro ${activeGiroId}` },
+    { id: 'som', label: 'Lab de Som', icon: <Waves className="w-5 h-5 text-amber-300" /> },
     { id: 'oraculo', label: 'Oráculo', icon: <Sparkles className="w-5 h-5 text-purple-300" /> },
     { id: 'evangelho', label: 'Evangelho', icon: <BookOpen className="w-5 h-5 text-blue-300" /> },
   ];

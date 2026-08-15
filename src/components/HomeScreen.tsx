@@ -4,7 +4,7 @@ import { PraticaDeHoje } from './PraticaDeHoje';
 import { CiclosDePratica } from './CiclosDePratica';
 import { getGiroById, GIROS_DATA } from '../data/girosData';
 import { getRandomHumorousQuote, HumorousQuote } from '../data/humorousQuotes';
-import { Compass, Flame, Sparkles, BookOpen, ArrowRight, Quote, RefreshCw, Sun, Sunrise, Moon, User, CheckCircle2, Play } from 'lucide-react';
+import { Compass, Flame, Sparkles, BookOpen, ArrowRight, Quote, RefreshCw, Sun, Sunrise, Moon, User, CheckCircle2, Play, Waves } from 'lucide-react';
 import { GalaxySpiral } from './GalaxySpiral';
 
 export const HomeScreen: React.FC = () => {
@@ -183,13 +183,13 @@ export const HomeScreen: React.FC = () => {
         <CiclosDePratica />
       </div>
 
-      {/* Quick Access Grid: 3 DESTINATIONS */}
+      {/* Quick Access Grid: 4 DESTINATIONS */}
       <div className="space-y-4">
         <h3 className="text-xs uppercase tracking-widest font-bold text-[#c5a059] flex items-center gap-2">
-          <span>TRÊS CAMINHOS DA ESPIRAL</span>
+          <span>QUATRO CAMINHOS DA ESPIRAL</span>
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* Destination 1: A ESPIRAL & PRÁTICAS */}
           <div
             onClick={() => navigateTo('espiral')}
@@ -221,7 +221,38 @@ export const HomeScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Destination 2: ORÁCULO */}
+          {/* Destination 2: LABORATÓRIO DE SOM */}
+          <div
+            onClick={() => navigateTo('som')}
+            id="dest-som-button"
+            className="bg-[#0b0f19] border border-amber-500/30 hover:border-amber-400 p-5 rounded-lg cursor-pointer hover:bg-[#111728] transition-all group shadow-lg flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-md bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 group-hover:scale-110 transition-transform shrink-0">
+                  <Waves className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 block">
+                    SONORIDADE
+                  </span>
+                  <h4 className="font-serif font-bold text-base text-white mt-0.5 group-hover:text-amber-200">
+                    🎵 Lab de Som
+                  </h4>
+                </div>
+              </div>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Frequências puras e batimento binaural para as 7 Dimenúveis de meditação.
+              </p>
+            </div>
+
+            <div className="pt-4 text-xs font-semibold text-amber-300 flex items-center justify-between border-t border-neutral-800 mt-4">
+              <span>Entrar no Lab</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Destination 3: ORÁCULO */}
           <div
             onClick={() => navigateTo('oraculo')}
             id="dest-oraculo-button"
@@ -252,7 +283,7 @@ export const HomeScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Destination 3: EVANGELHO */}
+          {/* Destination 4: EVANGELHO */}
           <div
             onClick={() => navigateTo('evangelho')}
             id="dest-evangelho-button"

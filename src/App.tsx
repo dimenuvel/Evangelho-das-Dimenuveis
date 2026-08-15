@@ -11,6 +11,8 @@ import { TourModal } from './components/TourModal';
 import { SplashScreen } from './components/SplashScreen';
 import { ProfileModal } from './components/ProfileModal';
 import { GiroShareModal } from './components/GiroShareModal';
+import { LaboratorioDeSom } from './components/LaboratorioDeSom';
+import { SoundLabMiniPlayer } from './components/SoundLabMiniPlayer';
 
 const MainContent: React.FC = () => {
   const { currentTab, isTimerOpen, activePractice, closePracticeTimer } = useApp();
@@ -25,9 +27,13 @@ const MainContent: React.FC = () => {
       <main className="flex-1 pb-6 md:pb-8">
         {currentTab === 'home' && <HomeScreen />}
         {(currentTab === 'espiral' || currentTab === 'pratica_hoje') && <ContinuarEspiral />}
+        {currentTab === 'som' && <LaboratorioDeSom />}
         {currentTab === 'oraculo' && <OraculoTarot />}
         {currentTab === 'evangelho' && <EvangelhoBook />}
       </main>
+
+      {/* Sound Lab Floating Mini-Player for Background Audio */}
+      <SoundLabMiniPlayer />
 
       {/* Tour / Onboarding Modal */}
       <TourModal />
@@ -78,7 +84,7 @@ const MainContent: React.FC = () => {
             © Evangelho das Dimenúveis
           </a>
           <span className="text-[#c5a059]/40">•</span>
-          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.2</span>
+          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.5</span>
           <span className="text-[#c5a059]/40">•</span>
           <a
             href={`mailto:samuel.tiem@proton.me?subject=${encodeURIComponent('Evangelho das Dimenúveis')}`}
