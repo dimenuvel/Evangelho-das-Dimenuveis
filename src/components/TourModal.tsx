@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { BookOpen, Compass, Flame, Sparkles, ChevronRight, ChevronLeft, X, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Compass, Sparkles, ChevronLeft, ChevronRight, X, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { LanguageSelector } from './LanguageSelector';
 
 interface TourSlide {
   id: number;
@@ -92,8 +93,8 @@ export const TourModal: React.FC = () => {
     <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
       <div className="bg-[#0b0f19] border border-[#c5a059]/50 rounded-xl p-6 sm:p-8 max-w-xl w-full space-y-6 shadow-2xl relative my-8 text-neutral-200">
         
-        {/* Header: Title + Skip Button */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+        {/* Header: Title + Language Selector + Skip Button */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-4">
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-[#c5a059]" />
             <span className="text-xs uppercase font-bold tracking-widest text-[#c5a059]">
@@ -101,18 +102,22 @@ export const TourModal: React.FC = () => {
             </span>
           </div>
 
-          <button
-            onClick={() => {
-              closeTour();
-              setCurrentStep(0);
-            }}
-            id="skip-tour-button"
-            className="px-3 py-1 rounded-md text-xs text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-colors flex items-center gap-1 font-medium"
-            title={language === 'en' ? 'Skip Tour' : 'Pular Tour'}
-          >
-            <span>{language === 'en' ? 'Skip' : 'Pular'}</span>
-            <X className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+
+            <button
+              onClick={() => {
+                closeTour();
+                setCurrentStep(0);
+              }}
+              id="skip-tour-button"
+              className="px-3 py-1 rounded-md text-xs text-neutral-400 hover:text-white hover:bg-neutral-800/80 transition-colors flex items-center gap-1 font-medium"
+              title={language === 'en' ? 'Skip Tour' : 'Pular Tour'}
+            >
+              <span>{language === 'en' ? 'Skip' : 'Pular'}</span>
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
         {/* Slide Graphic Badge & Icon */}

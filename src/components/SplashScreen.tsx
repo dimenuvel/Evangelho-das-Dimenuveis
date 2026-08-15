@@ -1,10 +1,11 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Sparkles, X, ArrowRight, BookOpen } from 'lucide-react';
+import { Sparkles, ArrowRight, BookOpen } from 'lucide-react';
 import splashImage from '../assets/images/splash_poster_no_o_1786633063601.jpg';
+import { LanguageSelector } from './LanguageSelector';
 
 export const SplashScreen: React.FC = () => {
-  const { isSplashOpen, closeSplash, openTour, language, setLanguage } = useApp();
+  const { isSplashOpen, closeSplash, openTour, language } = useApp();
 
   if (!isSplashOpen) return null;
 
@@ -26,35 +27,8 @@ export const SplashScreen: React.FC = () => {
             <span>{language === 'en' ? 'CANONICAL TRANSMISSION' : 'TRANSMISSÃO CANÔNICA'}</span>
           </div>
 
-          {/* Language Switch Icons */}
-          <div className="flex items-center gap-1 bg-[#04060a] border border-[#c5a059]/30 rounded-lg p-0.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => setLanguage('pt')}
-              title="Português"
-              className={`px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1 transition-all ${
-                language === 'pt'
-                  ? 'bg-[#c5a059] text-black shadow-sm font-bold'
-                  : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              <span className="text-sm leading-none">🇧🇷</span>
-              <span className="text-[10px] uppercase tracking-wider font-mono">PT</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setLanguage('en')}
-              title="English"
-              className={`px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1 transition-all ${
-                language === 'en'
-                  ? 'bg-[#c5a059] text-black shadow-sm font-bold'
-                  : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              <span className="text-sm leading-none">🇺🇸</span>
-              <span className="text-[10px] uppercase tracking-wider font-mono">EN</span>
-            </button>
-          </div>
+          {/* Language Selector */}
+          <LanguageSelector />
         </div>
 
         {/* Poster Image Frame */}
