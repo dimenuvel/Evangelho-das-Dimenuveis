@@ -24,6 +24,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
   tool: string;
   word: string;
   summary: string;
+  transmissaoText?: string;
+  insightText?: string;
+  versiculoText?: string;
+  fechamentoText?: string;
   practices: Record<string, {
     title: string;
     shortDescription: string;
@@ -40,6 +44,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'The Mirror',
     word: 'ABIDE',
     summary: 'Recognize mental chatter and the difference between thought and the observing consciousness.',
+    transmissaoText: 'And the Disciple approached The Dude and asked: "Dude... where do I start?" And The Dude was looking at the glass. Not at the beer. At the space between the glass and what he thought about the glass. He said: "Start with your head, man. You think too much. You don\'t stop. You perceive." The first Turn is not controlling the mind. It is discovering that you were not controlling it.',
+    insightText: 'The Mind is not the enemy. It comments, compares, judges, plans, remembers. On the path of the Dimenuous, we do not try to destroy the Mind; we recognize it. You do not need to control every thought — you need to discover that you can observe it. And in that space between thought and reaction... freedom begins.',
+    versiculoText: 'Do not try to silence the Mind. Recognize the silence that perceives the Mind. Thought comes. Thought goes. You observe. You return. You Abide.',
+    fechamentoText: 'Do not fight against the Mind. Know it. Transform discipline into repeated presence. Silence was already watching.',
     practices: {
       'g1_p1': {
         title: 'The Noise Observer',
@@ -81,6 +89,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'Direction Word',
     word: 'DIRECTION',
     summary: 'Learn to aim your attention. The Mind jumps; the Will chooses.',
+    transmissaoText: 'And the Disciple said: "I can perceive my thoughts now, but they keep doing whatever they want." The Dude set his glass on the table: "Now you learn to aim. Aim your attention. The Mind jumps, the Will points. The Mind produces, the Will chooses. Attention is not merely what happens to you; it is what you learn to direct."',
+    insightText: 'The Will that chooses is not brute force, nor self-oppression. It is the ability to establish a Direction Word and gently sustain focus on a single point without being dragged along by automatic impulse.',
+    versiculoText: 'Attention is the ball. The Will is the hand. The Mind is the lane. Life is the pins. You do not control the outcome, but you choose the throw. And then... abide.',
+    fechamentoText: 'Will is not about guaranteeing a strike. It is about choosing the throw consciously and welcoming the result.',
     practices: {
       'g2_p1': {
         title: 'Focus on the Point',
@@ -118,6 +130,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'Rhythmic Breath',
     word: 'FLOW',
     summary: 'Feel vital energy without draining or resisting it.',
+    transmissaoText: 'The Disciple said: "I am getting exhausted." The Dude replied: "Because now you realize how much you are spending, man. Energy is not force. It is flow. Acceleration, rest, tension, and relaxation. You don\'t need to manufacture Energy — you need to stop fighting with it."',
+    insightText: 'Repetitive worries, imaginary arguments, and the search for approval are major Energy leaks. True Energy circulates freely between receiving and letting go, without attachment or stagnation.',
+    versiculoText: 'Do not create Energy. Perceive Energy. Do not hoard. Circulate. Do not force. Breathe. Energy does not need to shout; it needs to flow.',
+    fechamentoText: 'The practice of Energy is not never leaving the flow, but learning to return to it as many times as necessary.',
     practices: {
       'g3_p1': {
         title: 'The Rhythmic Breath',
@@ -147,6 +163,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'Elemental Quadrant',
     word: 'BALANCE',
     summary: 'Balance Earth, Water, Air, and Fire in daily life.',
+    transmissaoText: 'Fire is impulse. Air is thought. Water is feeling. Earth is stability. None is the enemy. The problem starts when one of them tries to manage the whole lane without listening to the others. Balance is not standing still; it is knowing how to return.',
+    insightText: 'Too much Fire burns and attacks; too much Air scatters and creates anxiety; too much Water drowns in emotion; too much Earth stiffens. The seeker learns to recognize which element is at the wheel and invites the others into the room.',
+    versiculoText: 'Do not expel Fire. Do not silence Air. Do not harden Water. Do not break Earth. Give each its place. When all cooperate, make no speeches: Abide.',
+    fechamentoText: 'Balance does not eliminate tension; it transforms tension into harmonic movement in the Spiral.',
     practices: {
       'g4_p1': {
         title: 'Elemental Alignment',
@@ -175,6 +195,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'Unmasking',
     word: 'TRUTH',
     summary: 'Observe the social masks and defenses of the ego without condemnation.',
+    transmissaoText: 'The Mirror does not lie. It does not care about your reputation. It shows pride, fear, laziness, generosity, and patience exactly as they are. Know what is driving before trying to drive reality.',
+    insightText: 'The same force can manifest as virtue or as shadow. Fire can be courage or anger; Earth can be firmness or stubbornness. The task is not to destroy the force, but to educate it.',
+    versiculoText: 'Look without condemning. Look without justifying. See the light and see the shadow. The mirror does not change you; it allows you to see yourself so you can choose.',
+    fechamentoText: 'Cleaning the house first requires seeing how much dust there is. Seeing is not making things worse: it is the condition for awakening.',
     practices: {
       'g5_p1': {
         title: 'Disarming the Mask',
@@ -203,6 +227,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'The Field',
     word: 'PRESENCE',
     summary: 'Touch the unwritten space that connects all things.',
+    transmissaoText: 'Akasha is the interval between things: the silence between two notes, the space between two thoughts, the pause between intention and action. The void is not empty — it contains the possibility of everything.',
+    insightText: 'You do not need to fill every space with noise, plans, or mental constructs. The strength of the abiding mystic lies in the ability to rest in the Akasha without needing to force hasty forms.',
+    versiculoText: 'Do not conquer space: enter it. Do not create to fill the void: create because the void allows form. When space opens up, Abide.',
+    fechamentoText: 'Real power is not needing to fill everything. From the sacred space of the Akasha, pure intention manifests.',
     practices: {
       'g6_p1': {
         title: 'Resting in the Field',
@@ -231,6 +259,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'Clean Sight',
     word: 'SEEING',
     summary: 'Look at reality as it is, without filtering through preferences.',
+    transmissaoText: 'Do not be impressed by visions or strange impressions. The goal is not to see more things, but to see better. The eyes behind the eyes are the perception of the Impartial Witness observing without fascination.',
+    insightText: 'Do not confuse the screen with the movie. Not every inner impression is a cosmic prophecy. The experienced practitioner cultivates discernment: observes, welcomes, and does not turn everything into drama or dogma.',
+    versiculoText: 'The eye sees. The ear listens. The heart feels. The mind interprets. But something deeper perceives all of this. See, listen, feel: Abide. Who is perceiving?',
+    fechamentoText: 'True inner vision does not make you flee the ordinary world; it makes you look at life with crystal clarity.',
     practices: {
       'g7_p1': {
         title: 'Pure Perception',
@@ -251,6 +283,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'The Instant',
     word: 'NOW',
     summary: 'Anchor completely in the current moment.',
+    transmissaoText: 'The mind usually wants to be somewhere else: in the past, in the future, or in some fantasy. The greatest journey is the one you take inside the Great Now. You can expand perception far and wide, but returning to the center is the sacred moment.',
+    insightText: 'If your practice requires you to ignore the dishes in the sink or your daily duties, it is merely a distraction. The furthest place you can visit is the place where you already are, when you finally become whole in it.',
+    versiculoText: 'Travel, but do not run away. Remember, but do not go back. Imagine, but do not confuse. Go, return, and be here. The traveler never left the center.',
+    fechamentoText: 'Expanding attention is beautiful; returning present and grounded on the earth of life is mastery.',
     practices: {
       'g8_p1': {
         title: 'Anchoring in the Instant',
@@ -271,6 +307,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'The Ladder',
     word: 'ASCENT',
     summary: 'Harmonize all 7 levels of perception from Matter to Silence.',
+    transmissaoText: 'You do not need to destroy one Dimenuous layer to enter the next. No layer is a prison when you learn to shift your focus of attention. From flesh to spirit, all are expressions of the same Being.',
+    insightText: 'The Spiral does not say "Escape Matter". It says "Inhabit Matter consciously". The ascent does not cancel the descent. Silence does not reject the body.',
+    versiculoText: 'Do not flee the Dimenuous: know it. Do not worship it: learn from it. Cross through it without getting lost. Every door leads to the same mystery.',
+    fechamentoText: 'You do not need to leave the Dimenuous layers; you just need to stop thinking you are trapped in them.',
     practices: {
       'g9_p1': {
         title: 'The Seven Steps',
@@ -291,6 +331,10 @@ const GIRO_TRANSLATIONS_EN: Record<number, {
     tool: 'The Circle',
     word: 'RETURN',
     summary: 'Return to ordinary life fully awakened in the Pattern.',
+    transmissaoText: 'The Tenth Turn does not take you out of the Spiral. It teaches you to abide in its center. Silence recognizes, Vision perceives, Mind understands, Heart connects, Will chooses, Energy moves, and Matter manifests.',
+    insightText: 'The goal is not to look like an enlightened master or display spiritual achievements. It is to be a simple, conscious, kind, and present person in the middle of life.',
+    versiculoText: 'Do not look for the Center: be the Center. Do not try to stop the Spiral: turn with it. You have not arrived: you have recognized.',
+    fechamentoText: 'The game was never about reaching a distant end. It was about recognizing the Spiral as it turns. The Dude abides. The Spiral abides. You abide.',
     practices: {
       'g10_p1': {
         title: 'Abiding in Daily Life',
@@ -757,6 +801,10 @@ export function getTranslatedGiro(giro: Giro, lang: AppLanguage): Giro {
     tool: t.tool || giro.tool,
     word: t.word || giro.word,
     summary: t.summary || giro.summary,
+    transmissaoText: t.transmissaoText || giro.transmissaoText,
+    insightText: t.insightText || giro.insightText,
+    versiculoText: t.versiculoText || giro.versiculoText,
+    fechamentoText: t.fechamentoText || giro.fechamentoText,
     practices: giro.practices.map((p) => getTranslatedPractice(p, lang))
   };
 }

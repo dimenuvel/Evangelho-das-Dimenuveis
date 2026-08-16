@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { DIMENUVEIS_SOUNDS } from '../data/soundLabData';
+import { getTranslatedSound } from '../utils/dataI18n';
 import { soundLabAudioService, SoundLabState } from '../services/soundLabAudio';
 import { Play, Pause, Square, Waves, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export const SoundLabMiniPlayer: React.FC = () => {
-  const { currentTab, navigateTo, theme } = useApp();
+  const { currentTab, navigateTo, theme, t, language } = useApp();
   const isDay = theme === 'day';
   const [audioState, setAudioState] = useState<SoundLabState>(
     soundLabAudioService.getSnapshot()
@@ -26,12 +27,14 @@ export const SoundLabMiniPlayer: React.FC = () => {
     return null;
   }
 
-  const activeDimenuvel =
+  const rawDimenuvel =
     DIMENUVEIS_SOUNDS.find((d) => d.id === audioState.activeDimenuvelId) ||
     DIMENUVEIS_SOUNDS[0];
 
+  const activeDimenuvel = getTranslatedSound(rawDimenuvel, language);
+
   const formatRemainingTime = (totalSecs: number | null): string => {
-    if (totalSecs === null) return 'Contínuo';
+    if (totalSecs === null) return t('som.continuous');
     const mins = Math.floor(totalSecs / 60);
     const secs = totalSecs % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -87,7 +90,7 @@ export const SoundLabMiniPlayer: React.FC = () => {
             <div className={`flex items-center gap-1.5 text-[10px] uppercase font-mono tracking-wider ${
               isDay ? 'text-[#8a5a19]' : 'text-[#c5a059]'
             }`}>
-              <span>Lab de Som</span>
+              <span>{t('som.miniTitle')}</span>
               <span>•</span>
               <span className={`font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
                 {formatRemainingTime(audioState.remainingSeconds)}
@@ -110,7 +113,7 @@ export const SoundLabMiniPlayer: React.FC = () => {
                 ? 'bg-[#f0d8a8] hover:bg-[#e2c48e] text-[#3d260a] border-[#c59a48]'
                 : 'bg-[#c5a059]/20 hover:bg-[#c5a059]/30 text-[#f3e3a2] border-[#c5a059]/40'
             }`}
-            title="Pausar Som"
+            title={t('som.btnPause')}
             id="sound-mini-player-pause-btn"
           >
             <Pause className="w-4 h-4 fill-current" />
@@ -123,7 +126,7 @@ export const SoundLabMiniPlayer: React.FC = () => {
                 ? 'bg-stone-200 hover:bg-stone-300 text-stone-800 border-stone-300'
                 : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 border-neutral-700/60'
             }`}
-            title="Parar Som"
+            title={t('som.btnStop')}
             id="sound-mini-player-stop-btn"
           >
             <Square className="w-3.5 h-3.5 fill-current" />
@@ -134,7 +137,7 @@ export const SoundLabMiniPlayer: React.FC = () => {
             className={`p-1.5 transition-colors ${
               isDay ? 'text-[#8a5a19] hover:text-[#3d260a]' : 'text-[#c5a059] hover:text-[#f3e3a2]'
             }`}
-            title="Abrir Laboratório de Som"
+            title={t('som.miniOpen')}
             id="sound-mini-player-open-tab-btn"
           >
             <ChevronRight className="w-5 h-5" />

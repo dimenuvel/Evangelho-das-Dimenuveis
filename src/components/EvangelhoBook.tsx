@@ -100,7 +100,7 @@ export const EvangelhoBook: React.FC = () => {
             <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Buscar no Evangelho..."
+              placeholder={language === 'en' ? "Search in the Gospel..." : "Buscar no Evangelho..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[#121826] border border-neutral-800 rounded-md pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#c5a059]"
@@ -120,7 +120,7 @@ export const EvangelhoBook: React.FC = () => {
                     : 'bg-[#121826] text-neutral-400 hover:text-white border border-neutral-800'
                 }`}
               >
-                {cat}
+                {cat === 'TODOS' ? (language === 'en' ? 'ALL' : 'TODOS') : cat}
               </button>
             ))}
           </div>
@@ -160,7 +160,10 @@ export const EvangelhoBook: React.FC = () => {
 
             {filteredChapters.length === 0 && (
               <p className="text-xs text-neutral-500 text-center py-6">
-                Nenhum trecho encontrado para "{searchQuery}".
+                {language === 'en'
+                  ? `No excerpt found for "${searchQuery}".`
+                  : `Nenhum trecho encontrado para "${searchQuery}".`
+                }
               </p>
             )}
           </div>
