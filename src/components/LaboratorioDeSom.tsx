@@ -259,7 +259,7 @@ export const LaboratorioDeSom: React.FC = () => {
                   ? 'bg-stone-200 hover:bg-stone-300 text-stone-800 border-stone-300'
                   : 'bg-neutral-900/90 hover:bg-neutral-800 text-neutral-300 hover:text-neutral-100 border-neutral-700/60'
               }`}
-              title="Parar áudio com fade-out suave"
+              title={t('som.stopTooltip')}
             >
               <Square className="w-3.5 h-3.5 fill-current" />
               <span>{t('som.btnStop')}</span>
@@ -314,7 +314,7 @@ export const LaboratorioDeSom: React.FC = () => {
               <span className={`text-[10px] font-mono italic block ${
                 isDay ? 'text-[#8a5a19]' : 'text-amber-400'
               }`}>
-                Termina suavemente com fade-out
+                {t('som.fadeoutNote')}
               </span>
             )}
           </div>
