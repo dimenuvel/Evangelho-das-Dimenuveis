@@ -95,7 +95,7 @@ O projeto possui também um repositório próprio para desenvolvimento e distrib
 
 **Laboratório de Som — Evangelho das Dimenúveis**
 
-https://github.com/dimenuvel/Evangelho-das-Dimenúveis-Som
+https://github.com/dimenuvel/Evangelho-das-Dimenuveis-Som
 
 ### 6. ✨ Experiência Visual & Atmosfera
 
