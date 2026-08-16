@@ -210,7 +210,7 @@ O Laboratório de Som possui seu próprio projeto e ciclo de desenvolvimento par
 
 **Repositório:**
 
-https://github.com/dimenuvel/Evangelho-das-Dimenúveis-Som
+https://github.com/dimenuvel/Evangelho-das-Dimenuveis-Som
 
 A existência de um projeto separado permite desenvolver, testar e distribuir a experiência sonora como uma aplicação independente, enquanto seus conceitos podem também acompanhar a experiência contemplativa principal.
 
