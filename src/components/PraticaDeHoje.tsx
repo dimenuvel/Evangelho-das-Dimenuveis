@@ -46,7 +46,7 @@ export const PraticaDeHoje: React.FC = () => {
               {t('praticaHoje.tag')}
             </span>
             <span className="text-xs text-[#c5a059]/80 font-medium">
-              • {giroNumber} — {translatedGiro?.title}
+              • {translatedGiro?.numberRoman || giroNumber} — {translatedGiro?.title}
             </span>
           </div>
 

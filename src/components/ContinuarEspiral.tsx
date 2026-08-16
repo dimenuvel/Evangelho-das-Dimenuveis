@@ -30,7 +30,10 @@ export const ContinuarEspiral: React.FC = () => {
     return (
       <GiroDetailView
         giroId={selectedGiroForDetail}
-        onBack={() => setSelectedGiroForDetail(null)}
+        onBack={() => {
+          setSelectedGiroForDetail(null);
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }}
       />
     );
   }
@@ -134,7 +137,10 @@ export const ContinuarEspiral: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
               <button
-                onClick={() => setSelectedGiroForDetail(activeGiro.id)}
+                onClick={() => {
+                  setSelectedGiroForDetail(activeGiro.id);
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
                 id="continuar-giro-atual-button"
                 className="px-6 py-3.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] hover:to-[#f3e3a2] text-black font-bold tracking-wider uppercase text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#c5a059]/20 hover:scale-[1.02] active:scale-95 transition-all"
               >
@@ -166,6 +172,7 @@ export const ContinuarEspiral: React.FC = () => {
                   if (isUnlocked) {
                     setActiveGiroId(giro.id);
                     setSelectedGiroForDetail(giro.id);
+                    window.scrollTo({ top: 0, behavior: 'instant' });
                   }
                 }}
                 className={`p-5 rounded-lg border transition-all duration-200 relative overflow-hidden ${

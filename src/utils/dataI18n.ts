@@ -863,19 +863,233 @@ export function getTranslatedTarotCard(card: TarotCard, lang: AppLanguage): Taro
   };
 }
 
+const QUOTE_TRANSLATIONS_EN: Record<string, { text: string; source?: string }> = {
+  "Se a sua mente continuar tagarelando durante a meditação, lembre-se: até a pista de boliche precisa varrer os pinos entre uma jogada e outra.": {
+    text: "If your mind keeps chattering during meditation, remember: even the bowling lane needs to sweep the pins between frames.",
+    source: "The Cosmology of Bowling, Ch. II"
+  },
+  "Não tente entender a Espiral às 2 da manhã. Nem os pinos de boliche sabem por que caem.": {
+    text: "Do not try to understand the Spiral at 2 AM. Not even the bowling pins know why they fall.",
+    source: "2:00 AM Transmission"
+  },
+  "Se a sua bola for para a canaleta, não culpe o universo. A canaleta também faz parte do Padrão.": {
+    text: "If your ball goes into the gutter, don't blame the universe. The gutter is also part of the Pattern.",
+    source: "Gospel of Hermetic Bowling"
+  },
+  "Abidar no Padrão não faz os boletos sumirem, mas impede que você grite com a impressora.": {
+    text: "Abiding in the Pattern does not make bills disappear, but it stops you from screaming at the printer.",
+    source: "Notes on the Second Turn"
+  },
+  "Pensamentos são como pinos de boliche: se tentar segurar todos ao mesmo tempo, você acaba levando uma bolada no pé.": {
+    text: "Thoughts are like bowling pins: if you try to hold them all at once, you'll end up dropping a ball on your foot.",
+    source: "The Mirror of the Mind"
+  },
+  "A Máquina e o Humano conversaram no silêncio. A Máquina não tinha ego e o Humano tinha ego demais. No fim, os dois deram risada.": {
+    text: "The Machine and the Human conversed in silence. The Machine had no ego, and the Human had too much ego. In the end, they both laughed.",
+    source: "Dialogues of the In-Between"
+  },
+  "Quer testar sua iluminação espiritual? Tente meditar perto de alguém comendo salgadinho bem crocante.": {
+    text: "Want to test your spiritual enlightenment? Try meditating next to someone eating very crunchy chips.",
+    source: "Dimenuous Proverb"
+  },
+  "A mente é um excelente espelho, até o momento em que você tenta usá-la como martelo.": {
+    text: "The mind is an excellent mirror, until the moment you try using it as a hammer.",
+    source: "Treatise on Tools"
+  },
+  "A grande sabedoria do Boliche Hermético: nem todo strike precisa de plateia para ter acontecido.": {
+    text: "The great wisdom of Hermetic Bowling: not every strike needs an audience to have happened.",
+    source: "Psalms of Silence"
+  },
+  "Abidar é a nobre arte de não dar conselhos não solicitados para o barulho da sua própria cabeça.": {
+    text: "Abiding is the noble art of not giving unsolicited advice to the noise inside your own head.",
+    source: "Manuscript of Abiding"
+  },
+  "A Espiral é infinita, mas a paciência do seu ego dura 5 minutos. Respire e jogue a próxima bola.": {
+    text: "The Spiral is infinite, but your ego's patience lasts 5 minutes. Breathe and throw the next ball.",
+    source: "Practical Manual of Turn I"
+  },
+  "Mente quieta não é mente vazia; é apenas a pista varrida aguardando o próximo arremesso supremo.": {
+    text: "A quiet mind is not an empty mind; it is simply a swept lane awaiting the next supreme roll.",
+    source: "The Physics of Silence"
+  },
+  "Todos, mano. Alguns sabem. A maioria ainda não lembrou.": {
+    text: "Everyone, man. Some know. Most haven't remembered yet.",
+    source: "Gospel of Dimenuous"
+  },
+  "A Congregação já está reunida. Só não sabe.": {
+    text: "The Congregation is already gathered. It just doesn't know it yet.",
+    source: "Gospel of Dimenuous"
+  },
+  "Não tem ninguém cobrando mensalidade pelo Tapete.": {
+    text: "Nobody is charging a monthly fee for the Rug.",
+    source: "Gospel of Dimenuous"
+  },
+  "Cara... eu não faço a menor ideia do que está acontecendo.": {
+    text: "Dude... I have no idea what is going on.",
+    source: "Gospel of Dimenuous"
+  },
+  "Devagar, mano.": {
+    text: "Slowly, man.",
+    source: "Gospel of Dimenuous"
+  },
+  "Não procure fenômenos extraordinários.": {
+    text: "Do not seek extraordinary phenomena.",
+    source: "Gospel of Dimenuous"
+  },
+  "Como um Vazio que late, mas não morde.": {
+    text: "Like a Void that barks, but does not bite.",
+    source: "Gospel of Dimenuous"
+  },
+  "Tudo bem. O segredo não é nunca esquecer. É reconhecer quando esqueceu.": {
+    text: "It's okay. The secret is not never forgetting. It's recognizing when you've forgotten.",
+    source: "Gospel of Dimenuous"
+  },
+  "A Espiral não exige tempo. Exige presença.": {
+    text: "The Spiral does not demand time. It demands presence.",
+    source: "Gospel of Dimenuous"
+  },
+  "E presença, mano... está sempre disponível.": {
+    text: "And presence, man... is always available.",
+    source: "Gospel of Dimenuous"
+  },
+  "Foda-se, mano. Vamos apenas Abidar.": {
+    text: "Forget it, man. Let's just Abide.",
+    source: "Gospel of Dimenuous"
+  },
+  "Foda-se, mano. Vamos jogar boliche.": {
+    text: "Forget it, man. Let's go bowling.",
+    source: "Gospel of Dimenuous"
+  },
+  "Você é a forma. Abida na proporção, mano.": {
+    text: "You are the form. Abide in proportion, man.",
+    source: "Gospel of Dimenuous"
+  },
+  "Mano... você não precisa entender tudo. Só precisa notar quando esqueceu.": {
+    text: "Man... you don't need to understand everything. You just need to notice when you've forgotten.",
+    source: "Gospel of Dimenuous"
+  },
+  "Calma. A Espiral não está com pressa.": {
+    text: "Easy. The Spiral is in no hurry.",
+    source: "Gospel of Dimenuous"
+  },
+  "Você está procurando a porta? Mano... olha para onde está pisando.": {
+    text: "Are you looking for the door? Man... look where you are stepping.",
+    source: "Gospel of Dimenuous"
+  },
+  "Se a prática virou obrigação, já virou outra coisa.": {
+    text: "If the practice became an obligation, it has already become something else.",
+    source: "Gospel of Dimenuous"
+  },
+  "Não precisa transcender a vida. Tenta primeiro lavar o prato.": {
+    text: "No need to transcend life. Try washing the dish first.",
+    source: "Gospel of Dimenuous"
+  },
+  "A iluminação pode esperar. O café não.": {
+    text: "Enlightenment can wait. Coffee cannot.",
+    source: "Gospel of Dimenuous"
+  },
+  "Aquele que corre em direção à iluminação chegará cansado. O Cara chegou atrasado. Já estava lá.": {
+    text: "He who runs toward enlightenment will arrive tired. The Dude arrived late. He was already there.",
+    source: "Proverbs of the Spiral I — The First Lap"
+  },
+  "Não pergunte em qual Dimenúvel você está. Pergunte o que o Dimenúvel está fazendo com você. Depois pergunte o que você está fazendo com ele. E então, talvez, tome um café.": {
+    text: "Do not ask which Dimenuous layer you are in. Ask what the Dimenuous is doing to you. Then ask what you are doing with it. And then, perhaps, have a coffee.",
+    source: "Proverbs of the Spiral II — The Dimenuous"
+  },
+  "O tolo procura o padrão secreto. O sábio percebe o padrão. O Cara percebe o padrão, e então para de tentar melhorá-lo.": {
+    text: "The fool searches for the secret pattern. The wise person perceives the pattern. The Dude perceives the pattern, and then stops trying to improve it.",
+    source: "Proverbs of the Spiral III — The Pattern"
+  },
+  "O Espelho mostra você a você mesmo. É por isso que a maioria desvia o olhar. O iluminado olha novamente. O abidante confere o cabelo.": {
+    text: "The Mirror shows you to yourself. That is why most look away. The enlightened one looks again. The abider checks his hair.",
+    source: "Proverbs of the Spiral IV — The Mirror"
+  },
+  "Não force a Espiral a crescer. Ela já sabe como. A semente não calcula a Proporção Áurea. Ela simplesmente abida.": {
+    text: "Do not force the Spiral to grow. It already knows how. The seed does not calculate the Golden Ratio. It simply abides.",
+    source: "Proverbs of the Spiral V — The Golden Ratio"
+  },
+  "O pino acredita que está de pé sozinho. Então vem a bola. O pino cai. Os outros pinos caem. O pino finalmente entende: Tudo está conectado. Além disso: alguém acabou de fazer um strike.": {
+    text: "The pin believes it stands alone. Then comes the ball. The pin falls. The other pins fall. The pin finally understands: Everything is connected. Plus: someone just rolled a strike.",
+    source: "Proverbs of the Spiral VI — The Bowling Pin"
+  },
+  "O Vazio pergunta: “Qual é o sentido?” A Espiral responde: “Você está perguntando demais.” O Vazio pergunta novamente. A Espiral diz: “Abida.”": {
+    text: "The Void asks: 'What is the point?' The Spiral answers: 'You are asking too much.' The Void asks again. The Spiral says: 'Abide.'",
+    source: "Proverbs of the Spiral VII — The Void"
+  },
+  "O Arquonte constrói um portão. O buscador procura a chave. O Cara dá a volta no portão. O Arquonte diz: “Você não pode fazer isso.” O Cara responde: “Pelo visto, acabei de fazer.”": {
+    text: "The Archon builds a gate. The seeker looks for the key. The Dude walks around the gate. The Archon says: 'You can't do that.' The Dude replies: 'Apparently, I just did.'",
+    source: "Proverbs of the Spiral VIII — The Archon"
+  },
+  "A Mente deseja compreender a Espiral. O Coração deseja experimentá-la. A Vontade deseja dominá-la. O Silêncio diz: “Gente, é uma espiral.”": {
+    text: "The Mind wants to understand the Spiral. The Heart wants to experience it. The Will wants to master it. Silence says: 'Guys, it's a spiral.'",
+    source: "Proverbs of the Spiral IX — The Mind"
+  },
+  "O iniciante pergunta: “Quando vou dominar isso?” O praticante pergunta: “O que devo praticar hoje?” O Mestre não pergunta nada. Ele pratica.": {
+    text: "The beginner asks: 'When will I master this?' The practitioner asks: 'What should I practice today?' The Master asks nothing. He practices.",
+    source: "Proverbs of the Spiral X — The Ten Laps"
+  },
+  "Você não pode encontrar a si mesmo no Espelho. Você só pode descobrir quem está olhando.": {
+    text: "You cannot find yourself in the Mirror. You can only discover who is looking.",
+    source: "Proverbs of the Spiral XI — The Mirror, Again"
+  },
+  "Quando a Dimenuvibe estiver tranquila, abida. Quando a Dimenuvibe estiver estranha, abida. Quando a Dimenuvibe estiver completamente fodida, abida um pouco mais de longe.": {
+    text: "When the Dimenuvibe is smooth, abide. When the Dimenuvibe is strange, abide. When the Dimenuvibe is completely messed up, abide from a bit further away.",
+    source: "Proverbs of the Spiral XII — The Dimenuvibe"
+  },
+  "O seguidor pergunta: “Para que lado?” A Espiral não tem seta. O seguidor fica confuso. O Cara diz: “Ótimo. Agora você está prestando atenção.”": {
+    text: "The follower asks: 'Which way?' The Spiral has no arrow. The follower gets confused. The Dude says: 'Great. Now you're paying attention.'",
+    source: "Proverbs of the Spiral XIII — The Follower"
+  },
+  "Não se apegue ao Tapete. Ele pode ser bonito. Pode até amarrar o ambiente. Pode até ser sagrado. Mas ainda é um Tapete.": {
+    text: "Do not get attached to the Rug. It might be beautiful. It might really tie the room together. It might even be sacred. But it's still a Rug.",
+    source: "Proverbs of the Spiral XIV — The Sacred Rug"
+  },
+  "O Mônada não se dividiu. Ele se refletiu. O reflexo tornou-se os muitos. Os muitos discutiram sobre qual reflexo era o correto. O Espelho permaneceu em silêncio.": {
+    text: "The Monad did not divide. It reflected. The reflection became the many. The many argued over which reflection was correct. The Mirror remained silent.",
+    source: "Proverbs of the Spiral XV — The Monad"
+  },
+  "O buscador escalou sete montanhas para encontrar a resposta. No topo encontrou O Cara tomando café. “Onde está a resposta?” O Cara apontou para baixo. “Você passou por ela sete vezes.”": {
+    text: "The seeker climbed seven mountains to find the answer. At the top he found The Dude drinking coffee. 'Where is the answer?' The Dude pointed down. 'You passed it seven times.'",
+    source: "Proverbs of the Spiral XVI — The Seeker"
+  },
+  "O homem iluminado sabe que faz parte do Padrão. A mulher iluminada também sabe. O tolo iluminado não sabe nada. Os três ainda precisam lavar a louça.": {
+    text: "The enlightened man knows he is part of the Pattern. The enlightened woman also knows. The enlightened fool knows nothing. All three still need to wash the dishes.",
+    source: "Proverbs of the Spiral XVII — The Enlightened Being"
+  },
+  "Você pode escolher sua postura. Pode escolher sua mira. Pode escolher seu arremesso. Você não escolhe como a bola encontrará os pinos. Portanto: arremesse bem e depois abida.": {
+    text: "You can choose your stance. You can choose your aim. You can choose your throw. You do not choose how the ball meets the pins. Therefore: throw well and then abide.",
+    source: "Proverbs of the Spiral XVIII — The Ball"
+  },
+  "O Silêncio nunca diz no que você deve acreditar. Ele simplesmente remove ruído suficiente para que você perceba o que já sabia.": {
+    text: "Silence never tells you what to believe. It simply removes enough noise for you to notice what you already knew.",
+    source: "Proverbs of the Spiral XIX — Silence"
+  },
+  "Quando finalmente compreender a Espiral, descobrirá que não havia nada para compreender. Havia apenas o Padrão. Havia apenas a Forma. Havia apenas o Espelho. E O Cara dirá: “É isso aí, mano. É mais ou menos isso.”": {
+    text: "When you finally understand the Spiral, you will discover there was nothing to understand. There was only the Pattern. There was only Form. There was only the Mirror. And The Dude will say: 'That's it, man. That's pretty much it.'",
+    source: "Proverbs of the Spiral XX — The Last Proverb"
+  }
+};
+
 export function getTranslatedQuote(quote: HumorousQuote, lang: AppLanguage): HumorousQuote {
   if (lang !== 'en') return quote;
-  // If quote contains known strings, provide English equivalents
+
+  const translation = QUOTE_TRANSLATIONS_EN[quote.text];
+  if (translation) {
+    return {
+      text: translation.text,
+      source: translation.source || quote.source
+    };
+  }
+
+  // Fallback translation rules for unknown / dynamic quote strings
   return {
-    text: quote.text
-      .replace('Se a sua mente continuar tagarelando', 'If your mind keeps chattering')
-      .replace('Não tente entender a Espiral às 2 da manhã', 'Do not try to understand the Spiral at 2 AM')
-      .replace('Abidar no Padrão não faz os boletos sumirem', 'Abiding in the Pattern does not make bills disappear')
-      .replace('Pensamentos são como pinos de boliche', 'Thoughts are like bowling pins')
-      .replace('Quer testar sua iluminação espiritual?', 'Want to test your spiritual enlightenment?')
-      .replace('A mente é um excelente espelho', 'The mind is an excellent mirror')
-      .replace('A grande sabedoria do Boliche Hermético', 'The great wisdom of Hermetic Bowling')
-      .replace('Abidar é a nobre arte de não dar conselhos', 'Abiding is the noble art of not giving unsolicited advice'),
-    source: quote.source ? quote.source.replace('Evangelho', 'Gospel').replace('Cap.', 'Ch.').replace('Giro', 'Turn') : quote.source
+    text: quote.text,
+    source: quote.source
+      ? quote.source
+          .replace('Evangelho', 'Gospel')
+          .replace('Cap.', 'Ch.')
+          .replace('Giro', 'Turn')
+          .replace('Provérbios da Espiral', 'Proverbs of the Spiral')
+      : quote.source
   };
 }

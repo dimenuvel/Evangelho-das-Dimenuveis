@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { getGiroById } from '../data/girosData';
 import { getTranslatedGiro, getTranslatedPractice } from '../utils/dataI18n';
@@ -12,6 +12,10 @@ interface GiroDetailViewProps {
 export const GiroDetailView: React.FC<GiroDetailViewProps> = ({ giroId, onBack }) => {
   const { openPracticeTimer, completedPractices, completedGiros, openGiroShareModal, t, language } = useApp();
   const [activeTab, setActivePracticeTab] = useState<'praticas' | 'transmissao'>('praticas');
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [giroId]);
 
   const rawGiro = getGiroById(giroId);
   const giro = rawGiro ? getTranslatedGiro(rawGiro, language) : null;
