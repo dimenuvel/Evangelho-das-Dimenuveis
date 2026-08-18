@@ -349,7 +349,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const backupPayload = {
       app: 'Evangelho das Dimenúveis',
-      version: '1.2',
+      version: '2.0',
       exportedAt: new Date().toISOString(),
       profiles: targetProfiles.map((p) => {
         if (p.id === activeProfileId) {

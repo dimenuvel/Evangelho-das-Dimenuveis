@@ -85,7 +85,7 @@ const MainContent: React.FC = () => {
             © {language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis'}
           </a>
           <span className="text-[#c5a059]/40">•</span>
-          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v1.8</span>
+          <span className="text-neutral-500 font-mono text-[10px] bg-neutral-900/80 px-1.5 py-0.5 rounded border border-neutral-800/80">v2.0</span>
           <span className="text-[#c5a059]/40">•</span>
           <a
             href={`mailto:samuel.tiem@proton.me?subject=${encodeURIComponent(language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis')}`}
