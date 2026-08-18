@@ -24,7 +24,7 @@ export const EvangelhoBook: React.FC = () => {
   const viewerSrc = `${PDFJS_VIEWER_URL}?file=${encodeURIComponent(PDF_URL)}`;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 flex flex-col ${isDay ? 'bg-[#f8f5ee] text-[#1c1917]' : 'bg-[#06080f] text-neutral-200'}`}>
+    <div className={`transition-colors duration-300 ${isDay ? 'bg-[#f8f5ee] text-[#1c1917]' : 'bg-[#06080f] text-neutral-200'}`}>
       {/* Header Banner */}
       <div className={`border-b px-4 py-3.5 ${
         isDay
@@ -53,20 +53,18 @@ export const EvangelhoBook: React.FC = () => {
       </div>
 
       {/* Main Body - Bundled PDF.js Viewer (offline, self-hosted) */}
-      <div className={`flex-1 flex flex-col min-h-[80vh] ${isDay ? 'bg-[#f4efe3]' : 'bg-[#04060b]'}`}>
-        <div className="flex-1 flex flex-col p-2 sm:p-4">
-          <div className={`flex-1 rounded-xl border shadow-2xl overflow-hidden ${
-            isDay
-              ? 'bg-[#eae3d2] border-[#c5a059]/50 shadow-amber-900/10'
-              : 'bg-[#0a0d18] border-[#c5a059]/40 shadow-black'
-          }`}>
-            <iframe
-              src={viewerSrc}
-              title={PDF_METADATA.title}
-              className="w-full h-full min-h-[75vh] border-0"
-              allow="fullscreen"
-            />
-          </div>
+      <div className={`p-2 sm:p-4 ${isDay ? 'bg-[#f4efe3]' : 'bg-[#04060b]'}`}>
+        <div className={`rounded-xl border shadow-2xl overflow-hidden h-[75vh] ${
+          isDay
+            ? 'bg-[#eae3d2] border-[#c5a059]/50 shadow-amber-900/10'
+            : 'bg-[#0a0d18] border-[#c5a059]/40 shadow-black'
+        }`}>
+          <iframe
+            src={viewerSrc}
+            title={PDF_METADATA.title}
+            className="w-full h-full border-0"
+            allow="fullscreen"
+          />
         </div>
       </div>
     </div>
