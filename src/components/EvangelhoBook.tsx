@@ -11,7 +11,7 @@ import {
 // Single source of truth for the Gospel PDF location.
 // Change this if the filename/path in /public differs.
 // ---------------------------------------------------------------------------
-const PDF_URL = '/Evangelho-Final-17-08.pdf';
+const PDF_URL = '/evangelho-das-dimenuveis.pdf';
 
 const PDF_METADATA = {
   title: 'EVANGELHO DAS DIMENÚVEIS',
