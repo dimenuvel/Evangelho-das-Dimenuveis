@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Download, FileCheck, ExternalLink } from 'lucide-react';
+import { FileCheck } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Single source of truth for the Gospel PDF location.
@@ -25,13 +25,13 @@ export const EvangelhoBook: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 flex flex-col ${isDay ? 'bg-[#f8f5ee] text-[#1c1917]' : 'bg-[#06080f] text-neutral-200'}`}>
-      {/* Header Banner & Download Button */}
+      {/* Header Banner */}
       <div className={`border-b px-4 py-3.5 ${
         isDay
           ? 'bg-gradient-to-r from-[#faf7f0] via-[#f3ece0] to-[#faf7f0] border-[#c5a059]/40'
           : 'bg-gradient-to-r from-[#0d1322] via-[#090d18] to-[#0d1322] border-[#c5a059]/30'
       }`}>
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-3 text-xs">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg border shrink-0 ${
               isDay ? 'bg-[#c5a059]/15 border-[#c5a059]/40 text-[#78350f]' : 'bg-[#c5a059]/20 border-[#c5a059]/40 text-[#f3e3a2]'
@@ -48,33 +48,6 @@ export const EvangelhoBook: React.FC = () => {
                   : `Manuscrito PDF Canônico • ${PDF_METADATA.totalPages} Páginas • Autor: Samuel M Tiem`}
               </p>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <a
-              href={PDF_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`px-3 py-2 rounded-lg border font-mono font-bold text-xs flex items-center gap-2 transition-all active:scale-95 shrink-0 ${
-                isDay
-                  ? 'border-[#c5a059]/50 text-[#78350f] hover:bg-[#c5a059]/10'
-                  : 'border-[#c5a059]/40 text-[#f3e3a2] hover:bg-[#c5a059]/10'
-              }`}
-              title={language === 'en' ? 'Open PDF in New Tab' : 'Abrir PDF em Nova Aba'}
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span className="hidden sm:inline">{language === 'en' ? 'Open' : 'Abrir'}</span>
-            </a>
-
-            <a
-              href={PDF_URL}
-              download="Evangelho-das-Dimenuveis-Obra-Canonica.pdf"
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-mono font-bold text-xs flex items-center gap-2 shadow-lg transition-all active:scale-95 shrink-0"
-              title={language === 'en' ? 'Download PDF File' : 'Baixar PDF'}
-            >
-              <Download className="w-4 h-4" />
-              <span>{language === 'en' ? 'Download PDF' : 'Baixar PDF'}</span>
-            </a>
           </div>
         </div>
       </div>
