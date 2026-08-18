@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { useApp } from '../context/AppContext';
-import { PDF_METADATA } from '../data/gospelPdfData';
 import {
   Download,
   FileCheck,
@@ -13,6 +12,11 @@ import {
   ZoomOut,
   Loader2
 } from 'lucide-react';
+
+const PDF_METADATA = {
+  title: 'EVANGELHO DAS DIMENÚVEIS',
+  totalPages: 462
+};
 
 // Configure worker for pdfjs-dist
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
