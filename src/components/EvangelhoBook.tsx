@@ -19,11 +19,13 @@ const PDF_METADATA = {
 };
 
 // Configure worker for pdfjs-dist
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+}
 
 export const EvangelhoBook: React.FC = () => {
   const { language, theme } = useApp();
-  const pdfPath = '/evangelho-das-dimenuveis.pdf';
+  const pdfPath = '/book/evangelho-das-dimenuveis.pdf';
 
   // State
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
