@@ -1,189 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Download,
   FileCheck,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  ZoomIn,
-  ZoomOut,
-  Loader2
+  ExternalLink,
+  AlertTriangle
 } from 'lucide-react';
+
+// ---------------------------------------------------------------------------
+// Single source of truth for the Gospel PDF location.
+// Change this if the filename/path in /public differs.
+// ---------------------------------------------------------------------------
+const PDF_URL = '/evangelho-das-dimenuveis.pdf';
 
 const PDF_METADATA = {
   title: 'EVANGELHO DAS DIMENÚVEIS',
   totalPages: 462
 };
 
-// Configure worker for pdfjs-dist
-if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-}
-
 export const EvangelhoBook: React.FC = () => {
   const { language, theme } = useApp();
-  const pdfPath = '/book/evangelho-das-dimenuveis.pdf';
-
-  // State
-  const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(PDF_METADATA.totalPages || 462);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageInput, setPageInput] = useState<string>('1');
-  const [zoomScale, setZoomScale] = useState<number>(1.0);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Refs
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const renderTaskRef = useRef<any>(null);
-
-  // Load PDF Document
-  useEffect(() => {
-    let isMounted = true;
-    setLoading(true);
-
-    const loadingTask = pdfjsLib.getDocument(pdfPath);
-    loadingTask.promise
-      .then((doc) => {
-        if (!isMounted) return;
-        setPdfDoc(doc);
-        setTotalPages(doc.numPages);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Failed to load PDF with PDF.js:', err);
-        if (isMounted) {
-          setError(
-            language === 'en'
-              ? 'Could not load PDF document directly.'
-              : 'Não foi possível carregar o documento PDF diretamente.'
-          );
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [pdfPath, language]);
-
-  // Sync pageInput when currentPage changes
-  useEffect(() => {
-    setPageInput(currentPage.toString());
-  }, [currentPage]);
-
-  // Render Page to Canvas
-  useEffect(() => {
-    if (!pdfDoc || !canvasRef.current) return;
-
-    let isCancelled = false;
-
-    const renderPage = async () => {
-      try {
-        const page = await pdfDoc.getPage(currentPage);
-        if (isCancelled || !canvasRef.current) return;
-
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // Determine base width from container
-        const containerWidth = containerRef.current?.clientWidth || 800;
-        const availableWidth = Math.max(300, containerWidth - 32);
-
-        const unscaledViewport = page.getViewport({ scale: 1.0 });
-        const fitScale = availableWidth / unscaledViewport.width;
-        const finalScale = fitScale * zoomScale;
-
-        const viewport = page.getViewport({ scale: finalScale });
-
-        // Adjust for device pixel ratio for crisp rendering
-        const outputScale = window.devicePixelRatio || 1;
-        canvas.width = Math.floor(viewport.width * outputScale);
-        canvas.height = Math.floor(viewport.height * outputScale);
-        canvas.style.width = `${Math.floor(viewport.width)}px`;
-        canvas.style.height = `${Math.floor(viewport.height)}px`;
-
-        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-
-        const renderContext = {
-          canvasContext: ctx,
-          transform: transform || undefined,
-          viewport: viewport,
-        };
-
-        if (renderTaskRef.current) {
-          renderTaskRef.current.cancel();
-        }
-
-        const task = page.render(renderContext);
-        renderTaskRef.current = task;
-        await task.promise;
-      } catch (err: any) {
-        if (err?.name !== 'RenderingCancelledException') {
-          console.error('Error rendering page:', err);
-        }
-      }
-    };
-
-    renderPage();
-
-    return () => {
-      isCancelled = true;
-      if (renderTaskRef.current) {
-        renderTaskRef.current.cancel();
-      }
-    };
-  }, [pdfDoc, currentPage, zoomScale]);
-
-  // Keyboard Navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
-
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-        goToPage(currentPage + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        goToPage(currentPage - 1);
-      } else if (e.key === 'Home') {
-        goToPage(1);
-      } else if (e.key === 'End') {
-        goToPage(totalPages);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, totalPages]);
-
-  // Page Navigation Handlers
-  const goToPage = (page: number) => {
-    const target = Math.max(1, Math.min(totalPages, page));
-    setCurrentPage(target);
-    if (containerRef.current) {
-      containerRef.current.scrollTop = 0;
-    }
-  };
-
-  const handlePageInputSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = parseInt(pageInput, 10);
-    if (!isNaN(parsed)) {
-      goToPage(parsed);
-    } else {
-      setPageInput(currentPage.toString());
-    }
-  };
-
-  // Zoom Handlers
-  const zoomIn = () => setZoomScale((prev) => Math.min(prev + 0.25, 2.5));
-  const zoomOut = () => setZoomScale((prev) => Math.max(prev - 0.25, 0.5));
-
   const isDay = theme === 'day';
+
+  // Tracks whether the user has indicated the embedded viewer failed to
+  // render (some in-app WebViews / older browsers can't display PDFs
+  // inline). This never replaces the PDF — it only reveals an extra
+  // fallback affordance alongside it.
+  const [embedFailed, setEmbedFailed] = useState(false);
 
   return (
     <div className={`min-h-screen transition-colors duration-300 flex flex-col ${isDay ? 'bg-[#f8f5ee] text-[#1c1917]' : 'bg-[#06080f] text-neutral-200'}`}>
@@ -206,16 +49,32 @@ export const EvangelhoBook: React.FC = () => {
               </h2>
               <p className={`text-[11px] font-serif italic mt-0.5 ${isDay ? 'text-stone-600' : 'text-neutral-400'}`}>
                 {language === 'en'
-                  ? 'Canonical PDF Manuscript • 462 Pages • Author: Samuel M Tiem'
-                  : 'Manuscrito PDF Canônico • 462 Páginas • Autor: Samuel M Tiem'}
+                  ? `Canonical PDF Manuscript • ${PDF_METADATA.totalPages} Pages • Author: Samuel M Tiem`
+                  : `Manuscrito PDF Canônico • ${PDF_METADATA.totalPages} Páginas • Autor: Samuel M Tiem`}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Open in new tab (uses the browser's own PDF viewer/controls) */}
+            <a
+              href={PDF_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`px-3 py-2 rounded-lg border font-mono font-bold text-xs flex items-center gap-2 transition-all active:scale-95 shrink-0 ${
+                isDay
+                  ? 'border-[#c5a059]/50 text-[#78350f] hover:bg-[#c5a059]/10'
+                  : 'border-[#c5a059]/40 text-[#f3e3a2] hover:bg-[#c5a059]/10'
+              }`}
+              title={language === 'en' ? 'Open PDF in New Tab' : 'Abrir PDF em Nova Aba'}
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="hidden sm:inline">{language === 'en' ? 'Open' : 'Abrir'}</span>
+            </a>
+
             {/* Direct Download Button */}
             <a
-              href={pdfPath}
+              href={PDF_URL}
               download="Evangelho-das-Dimenuveis-Obra-Canonica.pdf"
               className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-mono font-bold text-xs flex items-center gap-2 shadow-lg transition-all active:scale-95 shrink-0"
               title={language === 'en' ? 'Download PDF File' : 'Baixar PDF'}
@@ -227,155 +86,117 @@ export const EvangelhoBook: React.FC = () => {
         </div>
       </div>
 
-      {/* Embedded PDF Controls Toolbar — Page Stepper Navigation + Fixed Zoom Controls (Single-line, no layout shifts) */}
-      <div className={`sticky top-0 z-20 border-b backdrop-blur-md px-3 py-2 shadow-md ${
-        isDay
-          ? 'bg-[#f2ece0]/95 border-[#c5a059]/30 text-stone-800'
-          : 'bg-[#0b0f1a]/95 border-[#c5a059]/20 text-neutral-200'
-      }`}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between sm:justify-center gap-2 sm:gap-4 text-xs overflow-x-auto custom-scrollbar">
-          {/* Page Stepper Navigation (Single Line) */}
-          <div className={`flex items-center gap-0.5 sm:gap-1 p-1 rounded-lg border font-mono shrink-0 whitespace-nowrap ${
-            isDay ? 'bg-stone-200/90 border-stone-300' : 'bg-black/60 border-white/10'
+      {/* Main Body - Native Browser PDF Embed */}
+      <div className={`flex-1 flex flex-col min-h-[80vh] ${isDay ? 'bg-[#f4efe3]' : 'bg-[#04060b]'}`}>
+        <div className="flex-1 flex flex-col p-2 sm:p-4">
+          <div className={`flex-1 rounded-xl border shadow-2xl overflow-hidden ${
+            isDay
+              ? 'bg-[#eae3d2] border-[#c5a059]/50 shadow-amber-900/10'
+              : 'bg-[#0a0d18] border-[#c5a059]/40 shadow-black'
           }`}>
-            <button
-              type="button"
-              onClick={() => goToPage(1)}
-              disabled={currentPage <= 1}
-              className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 transition-colors shrink-0"
-              title={language === 'en' ? 'First Page' : 'Primeira Página'}
+            {/*
+              <object> is used instead of a bare <iframe> because it gives us
+              a genuine, browser-native fallback: if the browser/WebView has
+              no PDF renderer registered for the type, the child content
+              below is displayed automatically — no JS detection needed.
+              The <embed> nested inside covers browsers that render object
+              fallbacks differently. Both point at the same, unmodified
+              existing PDF_URL.
+            */}
+            <object
+              data={PDF_URL}
+              type="application/pdf"
+              className="w-full h-full min-h-[75vh]"
+              aria-label={PDF_METADATA.title}
             >
-              <ChevronsLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage <= 1}
-              className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 transition-colors shrink-0"
-              title={language === 'en' ? 'Previous Page' : 'Página Anterior'}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <form onSubmit={handlePageInputSubmit} className="flex items-center gap-1 px-1 shrink-0">
-              <span className="text-[10px] uppercase opacity-75 shrink-0">
-                {language === 'en' ? 'P.' : 'Pág'}
-              </span>
-              <input
-                type="text"
-                value={pageInput}
-                onChange={(e) => setPageInput(e.target.value)}
-                onBlur={handlePageInputSubmit}
-                className={`w-11 text-center border rounded py-0.5 px-0.5 font-bold text-xs focus:outline-none shrink-0 ${
-                  isDay
-                    ? 'bg-white border-stone-300 text-[#78350f] focus:border-[#92400e]'
-                    : 'bg-black/80 border-white/20 text-[#c5a059] focus:border-[#c5a059]'
-                }`}
+              <embed
+                src={PDF_URL}
+                type="application/pdf"
+                className="w-full h-full min-h-[75vh]"
               />
-              <span className="text-[10px] opacity-75 shrink-0">/ {totalPages}</span>
-            </form>
 
+              {/* Native fallback content — shown only if neither <object> nor <embed> can render the PDF */}
+              <div className="w-full h-full min-h-[75vh] flex items-center justify-center p-8">
+                <div className="text-center space-y-4 max-w-md">
+                  <AlertTriangle className={`w-10 h-10 mx-auto ${isDay ? 'text-[#92400e]' : 'text-[#c5a059]'}`} />
+                  <p className={`font-serif text-sm ${isDay ? 'text-stone-700' : 'text-neutral-300'}`}>
+                    {language === 'en'
+                      ? 'Your browser cannot display this PDF inline. You can still open or download the original document.'
+                      : 'Seu navegador não consegue exibir este PDF diretamente. Você ainda pode abrir ou baixar o documento original.'}
+                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <a
+                      href={PDF_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-bold text-xs ${
+                        isDay ? 'border-[#c5a059]/50 text-[#78350f]' : 'border-[#c5a059]/40 text-[#f3e3a2]'
+                      }`}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>{language === 'en' ? 'Open PDF' : 'Abrir PDF'}</span>
+                    </a>
+                    <a
+                      href={PDF_URL}
+                      download="Evangelho-das-Dimenuveis-Obra-Canonica.pdf"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#c5a059] to-[#e5c158] text-black font-bold text-xs shadow-lg"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>{language === 'en' ? 'Download PDF' : 'Baixar PDF'}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </object>
+          </div>
+
+          {/* Small, always-visible fallback affordance for in-app WebViews that
+              silently render a blank frame instead of triggering the native
+              <object> fallback above (common on some Android Capacitor builds). */}
+          <div className="mt-2 flex items-center justify-center gap-2">
             <button
               type="button"
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-              className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 transition-colors shrink-0"
-              title={language === 'en' ? 'Next Page' : 'Próxima Página'}
+              onClick={() => setEmbedFailed((v) => !v)}
+              className={`text-[11px] font-serif italic underline underline-offset-2 opacity-70 hover:opacity-100 transition-opacity ${
+                isDay ? 'text-stone-600' : 'text-neutral-400'
+              }`}
             >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => goToPage(totalPages)}
-              disabled={currentPage >= totalPages}
-              className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 transition-colors shrink-0"
-              title={language === 'en' ? 'Last Page' : 'Última Página'}
-            >
-              <ChevronsRight className="w-4 h-4" />
+              {language === 'en' ? "PDF not showing?" : 'O PDF não aparece?'}
             </button>
           </div>
 
-          {/* Fixed-Width Zoom Controls (Without reset option, single line) */}
-          <div className={`flex items-center gap-0.5 sm:gap-1 p-1 rounded-lg border font-mono text-xs shrink-0 whitespace-nowrap min-w-[110px] justify-center ${
-            isDay ? 'bg-stone-200/90 border-stone-300' : 'bg-black/60 border-white/10'
-          }`}>
-            <button
-              type="button"
-              onClick={zoomOut}
-              disabled={zoomScale <= 0.5}
-              className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 transition-colors shrink-0"
-              title={language === 'en' ? 'Zoom Out' : 'Diminuir Zoom'}
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-
-            <span className={`w-12 text-center font-bold text-[11px] shrink-0 ${isDay ? 'text-[#78350f]' : 'text-[#c5a059]'}`}>
-              {Math.round(zoomScale * 100)}%
-            </span>
-
-            <button
-              type="button"
-              onClick={zoomIn}
-              disabled={zoomScale >= 2.5}
-              className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 transition-colors shrink-0"
-              title={language === 'en' ? 'Zoom In' : 'Aumentar Zoom'}
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Body - Embedded PDF Canvas Container */}
-      <div
-        ref={containerRef}
-        className={`flex-1 overflow-auto p-3 sm:p-6 flex flex-col items-center justify-start min-h-[75vh] ${
-          isDay ? 'bg-[#f4efe3]' : 'bg-[#04060b]'
-        }`}
-      >
-        <div className="w-full max-w-5xl flex flex-col items-center justify-center">
-          {loading && (
-            <div className={`py-24 flex flex-col items-center justify-center space-y-4 ${isDay ? 'text-[#78350f]' : 'text-[#c5a059]'}`}>
-              <Loader2 className="w-10 h-10 animate-spin" />
-              <p className={`font-serif text-sm tracking-wide ${isDay ? 'text-stone-700' : 'text-neutral-300'}`}>
-                {language === 'en'
-                  ? 'Loading PDF manuscript...'
-                  : 'Carregando o manuscrito PDF...'}
-              </p>
-            </div>
-          )}
-
-          {error && (
-            <div className="p-8 text-center space-y-4 max-w-md bg-red-950/30 border border-red-500/30 rounded-xl my-12">
-              <p className="text-red-300 font-serif text-sm">{error}</p>
-              <a
-                href={pdfPath}
-                download="Evangelho-das-Dimenuveis-Obra-Canonica.pdf"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#c5a059] text-black font-bold rounded-lg shadow-lg"
-              >
-                <Download className="w-4 h-4" />
-                <span>{language === 'en' ? 'Download PDF' : 'Baixar PDF'}</span>
-              </a>
-            </div>
-          )}
-
-          {/* Pure HTML5 Canvas Rendering */}
-          <div
-            className={`transition-opacity duration-200 ${
-              loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'
-            } flex justify-center w-full`}
-          >
-            <div className={`p-2 sm:p-4 rounded-xl border shadow-2xl overflow-x-auto max-w-full ${
-              isDay
-                ? 'bg-[#eae3d2] border-[#c5a059]/50 shadow-amber-900/10'
-                : 'bg-[#0a0d18] border-[#c5a059]/40 shadow-black'
+          {embedFailed && (
+            <div className={`mt-2 p-4 rounded-lg border text-center space-y-3 ${
+              isDay ? 'bg-[#eae3d2] border-[#c5a059]/40' : 'bg-[#0a0d18] border-[#c5a059]/30'
             }`}>
-              <canvas
-                ref={canvasRef}
-                className="mx-auto rounded shadow-lg bg-white block transition-all duration-300"
-              />
+              <p className={`font-serif text-xs ${isDay ? 'text-stone-700' : 'text-neutral-300'}`}>
+                {language === 'en'
+                  ? 'Some in-app browsers cannot preview PDFs. Open or download the original file directly:'
+                  : 'Alguns navegadores internos do app não conseguem pré-visualizar PDFs. Abra ou baixe o arquivo original diretamente:'}
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <a
+                  href={PDF_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-bold text-xs ${
+                    isDay ? 'border-[#c5a059]/50 text-[#78350f]' : 'border-[#c5a059]/40 text-[#f3e3a2]'
+                  }`}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>{language === 'en' ? 'Open PDF' : 'Abrir PDF'}</span>
+                </a>
+                <a
+                  href={PDF_URL}
+                  download="Evangelho-das-Dimenuveis-Obra-Canonica.pdf"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#c5a059] to-[#e5c158] text-black font-bold text-xs shadow-lg"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>{language === 'en' ? 'Download PDF' : 'Baixar PDF'}</span>
+                </a>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
