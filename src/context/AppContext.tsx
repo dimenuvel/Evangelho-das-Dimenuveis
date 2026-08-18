@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { NavigationTab, Practice, PracticeLog, TarotReading, GiroState, UserProfile } from '../types';
 import { GIROS_DATA, getGiroById } from '../data/girosData';
+import { AppLanguage, getTranslation } from '../utils/i18n';
 
 export type AppTheme = 'night' | 'day';
 
@@ -25,6 +26,10 @@ interface AppContextType {
   theme: AppTheme;
   setTheme: (theme: AppTheme) => void;
   toggleTheme: () => void;
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
+  toggleLanguage: () => void;
+  t: (key: string) => string;
   
   // Actions
   navigateTo: (tab: NavigationTab) => void;
@@ -59,6 +64,7 @@ const PROFILES_STORAGE_KEY = 'dimenuveis_app_profiles_v4';
 const ACTIVE_PROFILE_KEY = 'dimenuveis_active_profile_id_v4';
 const TOUR_SEEN_KEY = 'dimenuveis_tour_seen_v1';
 const THEME_STORAGE_KEY = 'dimenuveis_theme_v1';
+const LANGUAGE_STORAGE_KEY = 'dimenuveis_language_v1';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -96,6 +102,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return 'night';
     }
   });
+
+  const [language, setLanguageState] = useState<AppLanguage>(() => {
+    try {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      return (saved === 'en' || saved === 'pt') ? saved : 'pt';
+    } catch {
+      return 'pt';
+    }
+  });
+
+  const setLanguage = (newLang: AppLanguage) => {
+    setLanguageState(newLang);
+    try {
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, newLang);
+    } catch (e) {
+      console.error('Failed to save language setting:', e);
+    }
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'pt' ? 'en' : 'pt');
+  };
+
+  const t = (key: string): string => {
+    return getTranslation(language, key);
+  };
 
   const setTheme = (newTheme: AppTheme) => {
     setThemeState(newTheme);
@@ -317,7 +349,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const backupPayload = {
       app: 'Evangelho das Dimenúveis',
-      version: '1.2',
+      version: '2.0',
       exportedAt: new Date().toISOString(),
       profiles: targetProfiles.map((p) => {
         if (p.id === activeProfileId) {
@@ -366,7 +398,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
 
       if (!incomingProfiles || incomingProfiles.length === 0) {
-        return { success: false, message: 'O arquivo de backup não contém nenhum perfil válido de praticante.', importedCount: 0 };
+        return {
+          success: false,
+          message: language === 'en'
+            ? 'The backup file does not contain any valid practitioner profile.'
+            : 'O arquivo de backup não contém nenhum perfil válido de praticante.',
+          importedCount: 0
+        };
       }
 
       const sanitizedProfiles: UserProfile[] = incomingProfiles.map((p, idx) => {
@@ -376,7 +414,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         return {
           id: profileId,
-          name: p.name && typeof p.name === 'string' ? p.name : `Praticante Restaurado ${idx + 1}`,
+          name: p.name && typeof p.name === 'string'
+            ? p.name
+            : (language === 'en' ? `Restored Practitioner ${idx + 1}` : `Praticante Restaurado ${idx + 1}`),
           age: p.age,
           sex: p.sex,
           createdAt: p.createdAt || new Date().toISOString(),
@@ -422,14 +462,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       return {
         success: true,
-        message: `${sanitizedProfiles.length} perfil(is) de praticante restaurado(s) com sucesso!`,
+        message: language === 'en'
+          ? `${sanitizedProfiles.length} practitioner profile(s) successfully restored!`
+          : `${sanitizedProfiles.length} perfil(is) de praticante restaurado(s) com sucesso!`,
         importedCount: sanitizedProfiles.length
       };
     } catch (err) {
       console.error('Import JSON parse error:', err);
       return {
         success: false,
-        message: 'Erro ao ler o arquivo JSON. Certifique-se de carregar um arquivo de backup válido.',
+        message: language === 'en'
+          ? 'Error reading JSON file. Make sure to upload a valid backup file.'
+          : 'Erro ao ler o arquivo JSON. Certifique-se de carregar um arquivo de backup válido.',
         importedCount: 0
       };
     }
@@ -632,6 +676,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         theme,
         setTheme,
         toggleTheme,
+        language,
+        setLanguage,
+        toggleLanguage,
+        t,
         navigateTo,
         openPracticeTimer,
         closePracticeTimer,

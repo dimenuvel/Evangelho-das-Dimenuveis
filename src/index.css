@@ -97,9 +97,16 @@
 [data-theme="day"] .bg-\[\#0a0e1a\]\/80,
 [data-theme="day"] .bg-\[\#121826\]\/70,
 [data-theme="day"] .bg-neutral-800\/80,
-[data-theme="day"] .bg-neutral-900\/80 {
-  background-color: rgba(253, 251, 247, 0.95) !important;
-  border-color: rgba(184, 145, 61, 0.3) !important;
+[data-theme="day"] .bg-neutral-800\/60,
+[data-theme="day"] .bg-neutral-800\/50,
+[data-theme="day"] .bg-neutral-900\/90,
+[data-theme="day"] .bg-neutral-900\/80,
+[data-theme="day"] .bg-neutral-900\/70,
+[data-theme="day"] .bg-neutral-900\/60,
+[data-theme="day"] .bg-neutral-900\/50 {
+  background-color: #ffffff !important;
+  border-color: rgba(184, 145, 61, 0.35) !important;
+  color: #292524 !important;
 }
 
 /* Status Badges & Alert Banners in Day Mode */

@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { GIROS_DATA } from '../data/girosData';
-import { Activity, Calendar, Clock, Flame, Award, BarChart2 } from 'lucide-react';
+import { getTranslatedGiro } from '../utils/dataI18n';
+import { AppLanguage } from '../utils/i18n';
+import { Activity, Calendar, Clock, Flame, Award, BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -21,9 +23,10 @@ interface CustomTooltipProps {
   payload?: any[];
   label?: string;
   unitLabel?: string;
+  language?: AppLanguage;
 }
 
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label, language = 'pt' }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -34,14 +37,14 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
         <div className="flex items-center justify-between gap-4 text-neutral-200 pt-1">
           <span className="flex items-center gap-1 text-amber-300">
             <Clock className="w-3.5 h-3.5 text-[#c5a059]" />
-            <span>Tempo Praticado:</span>
+            <span>{language === 'en' ? 'Time Practiced:' : 'Tempo Praticado:'}</span>
           </span>
           <strong className="text-white font-mono">{data.minutos} min</strong>
         </div>
         <div className="flex items-center justify-between gap-4 text-neutral-200">
           <span className="flex items-center gap-1 text-amber-300">
             <Activity className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Sessões / Práticas:</span>
+            <span>{language === 'en' ? 'Sessions / Practices:' : 'Sessões / Práticas:'}</span>
           </span>
           <strong className="text-white font-mono">{data.sessoes}</strong>
         </div>
@@ -52,7 +55,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 };
 
 export const CiclosDePratica: React.FC = () => {
-  const { practiceLogs, completedPractices } = useApp();
+  const { practiceLogs, completedPractices, language } = useApp();
+  const [isExpanded, setIsExpanded] = useState(false);
   const [timeframe, setTimeframe] = useState<TimeFrame>('7d');
   const [metric, setMetric] = useState<'minutos' | 'sessoes'>('minutos');
 
@@ -76,10 +80,11 @@ export const CiclosDePratica: React.FC = () => {
       });
 
       const data = GIROS_DATA.map((giro) => {
+        const translatedGiro = getTranslatedGiro(giro, language);
         const stats = giroMap[giro.id] || { minutos: 0, sessoes: 0 };
         return {
-          label: giro.numberRoman,
-          fullLabel: `${giro.numberRoman} - ${giro.title}`,
+          label: translatedGiro.numberRoman,
+          fullLabel: `${translatedGiro.numberRoman} - ${translatedGiro.title}`,
           minutos: stats.minutos,
           sessoes: stats.sessoes
         };
@@ -99,7 +104,15 @@ export const CiclosDePratica: React.FC = () => {
 
     // Days calculation (7d or 30d)
     const numDays = timeframe === '7d' ? 7 : 30;
-    const daysArray: { dateStr: string; label: string; minutos: number; sessoes: number; rawDate: Date }[] = [];
+    const daysArray: { dateStr: string; label: string; fullLabel: string; minutos: number; sessoes: number; rawDate: Date }[] = [];
+
+    const daysOfWeek = language === 'en'
+      ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      : ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    const months = language === 'en'
+      ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      : ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
     for (let i = numDays - 1; i >= 0; i--) {
       const d = new Date(now);
@@ -108,16 +121,17 @@ export const CiclosDePratica: React.FC = () => {
       
       let label = '';
       if (numDays === 7) {
-        const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
         label = daysOfWeek[d.getDay()];
       } else {
-        const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         label = `${d.getDate()} ${months[d.getMonth()]}`;
       }
+
+      const fullLabel = `${daysOfWeek[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
 
       daysArray.push({
         dateStr,
         label,
+        fullLabel,
         minutos: 0,
         sessoes: 0,
         rawDate: d
@@ -151,7 +165,7 @@ export const CiclosDePratica: React.FC = () => {
       currentStreak: streak,
       avgMinutesPerDay: activeDaysCount > 0 ? Math.round(totMin / activeDaysCount) : 0
     };
-  }, [practiceLogs, timeframe]);
+  }, [practiceLogs, timeframe, language]);
 
   // Helper function to calculate active daily streak
   function calculateStreak(logs: typeof practiceLogs): number {
@@ -194,187 +208,216 @@ export const CiclosDePratica: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#0b0f19] border border-[#c5a059]/30 rounded-xl p-4 sm:p-6 space-y-5 shadow-xl relative overflow-hidden">
+    <div className="bg-[#0b0f19] border border-[#c5a059]/30 rounded-xl p-4 sm:p-5 shadow-xl relative overflow-hidden transition-all duration-300">
       {/* Decorative gradient highlight */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#c5a059]/20 pb-4">
-        <div className="space-y-1">
+      {/* Header & Clickable Dropdown Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between text-left group focus:outline-none cursor-pointer"
+      >
+        <div className="space-y-1 pr-2">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-md bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#f3e3a2]">
+            <div className="p-1.5 rounded-md bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#f3e3a2] group-hover:bg-[#c5a059]/30 transition-colors">
               <BarChart2 className="w-4 h-4" />
             </div>
-            <h3 className="font-serif font-bold text-base sm:text-lg text-[#f3e3a2] tracking-wide">
-              Ciclos de Prática
+            <h3 className="font-serif font-bold text-base sm:text-lg text-[#f3e3a2] tracking-wide group-hover:text-white transition-colors">
+              {language === 'en' ? 'Practice Cycles' : 'Ciclos de Prática'}
             </h3>
           </div>
           <p className="text-xs text-neutral-400">
-            Frequência contemplativa e tempo de meditação ao longo dos giros.
+            {language === 'en'
+              ? 'Contemplative frequency and meditation time across turns.'
+              : 'Frequência contemplativa e tempo de meditação ao longo dos giros.'}
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Timeframe Selector */}
-          <div className="flex items-center bg-[#121826] border border-neutral-800 rounded-lg p-0.5 text-xs">
-            {(['7d', '30d', 'giros'] as TimeFrame[]).map((tf) => (
+        <div className="flex items-center gap-2.5 shrink-0">
+          {!isExpanded && totalMinutes > 0 && (
+            <span className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-[#c5a059]/10 border border-[#c5a059]/30 text-xs font-mono text-[#f3e3a2]">
+              {totalMinutes} min
+            </span>
+          )}
+          <div className="p-2 rounded-lg bg-neutral-900/90 border border-neutral-800 text-neutral-400 group-hover:text-[#f3e3a2] group-hover:border-[#c5a059]/40 transition-all">
+            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </div>
+        </div>
+      </button>
+
+      {/* Collapsible Content */}
+      {isExpanded && (
+        <div className="space-y-5 pt-4 border-t border-[#c5a059]/20 mt-4 animate-fadeIn">
+          {/* Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Timeframe Selector */}
+            <div className="flex items-center bg-[#121826] border border-neutral-800 rounded-lg p-0.5 text-xs">
+              {(['7d', '30d', 'giros'] as TimeFrame[]).map((tf) => (
+                <button
+                  key={tf}
+                  onClick={() => setTimeframe(tf)}
+                  className={`px-2.5 py-1 rounded-md transition-all font-medium ${
+                    timeframe === tf
+                      ? 'bg-[#c5a059] text-black shadow-sm font-bold'
+                      : 'text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  {tf === '7d'
+                    ? (language === 'en' ? '7 Days' : '7 Dias')
+                    : tf === '30d'
+                    ? (language === 'en' ? '30 Days' : '30 Dias')
+                    : (language === 'en' ? 'By Turn' : 'Por Giro')}
+                </button>
+              ))}
+            </div>
+
+            {/* Metric Selector Toggle */}
+            <div className="flex items-center bg-[#121826] border border-neutral-800 rounded-lg p-0.5 text-xs self-start sm:self-auto">
               <button
-                key={tf}
-                onClick={() => setTimeframe(tf)}
+                onClick={() => setMetric('minutos')}
                 className={`px-2.5 py-1 rounded-md transition-all font-medium ${
-                  timeframe === tf
-                    ? 'bg-[#c5a059] text-black shadow-sm font-bold'
+                  metric === 'minutos'
+                    ? 'bg-amber-900/60 text-[#f3e3a2] border border-[#c5a059]/40'
                     : 'text-neutral-400 hover:text-neutral-200'
                 }`}
               >
-                {tf === '7d' ? '7 Dias' : tf === '30d' ? '30 Dias' : 'Por Giro'}
+                {language === 'en' ? 'Minutes' : 'Minutos'}
               </button>
-            ))}
+              <button
+                onClick={() => setMetric('sessoes')}
+                className={`px-2.5 py-1 rounded-md transition-all font-medium ${
+                  metric === 'sessoes'
+                    ? 'bg-amber-900/60 text-[#f3e3a2] border border-[#c5a059]/40'
+                    : 'text-neutral-400 hover:text-neutral-200'
+                }`}
+              >
+                {language === 'en' ? 'Sessions' : 'Sessões'}
+              </button>
+            </div>
           </div>
 
-          {/* Metric Selector Toggle */}
-          <div className="flex items-center bg-[#121826] border border-neutral-800 rounded-lg p-0.5 text-xs">
-            <button
-              onClick={() => setMetric('minutos')}
-              className={`px-2.5 py-1 rounded-md transition-all font-medium ${
-                metric === 'minutos'
-                  ? 'bg-amber-900/60 text-[#f3e3a2] border border-[#c5a059]/40'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              Minutos
-            </button>
-            <button
-              onClick={() => setMetric('sessoes')}
-              className={`px-2.5 py-1 rounded-md transition-all font-medium ${
-                metric === 'sessoes'
-                  ? 'bg-amber-900/60 text-[#f3e3a2] border border-[#c5a059]/40'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              Sessões
-            </button>
-          </div>
-        </div>
-      </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
+                <Clock className="w-3.5 h-3.5 text-[#c5a059]" />
+                <span>{language === 'en' ? 'Time in Cycle' : 'Tempo No Ciclo'}</span>
+              </div>
+              <p className="text-base sm:text-lg font-serif font-bold text-white">
+                {totalMinutes} <span className="text-xs font-sans text-[#c5a059] font-normal">min</span>
+              </p>
+            </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
-            <Clock className="w-3.5 h-3.5 text-[#c5a059]" />
-            <span>Tempo No Ciclo</span>
-          </div>
-          <p className="text-base sm:text-lg font-serif font-bold text-white">
-            {totalMinutes} <span className="text-xs font-sans text-[#c5a059] font-normal">min</span>
-          </p>
-        </div>
+            <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
+                <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{language === 'en' ? 'Completed Practices' : 'Práticas Concluídas'}</span>
+              </div>
+              <p className="text-base sm:text-lg font-serif font-bold text-white">
+                {completedPractices.length} <span className="text-xs font-sans text-emerald-400 font-normal">{language === 'en' ? 'total' : 'totais'}</span>
+              </p>
+            </div>
 
-        <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
-            <Activity className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Práticas Concluídas</span>
-          </div>
-          <p className="text-base sm:text-lg font-serif font-bold text-white">
-            {completedPractices.length} <span className="text-xs font-sans text-emerald-400 font-normal">totais</span>
-          </p>
-        </div>
+            <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
+                <Flame className="w-3.5 h-3.5 text-amber-500" />
+                <span>{language === 'en' ? 'Active Streak' : 'Sequência Ativa'}</span>
+              </div>
+              <p className="text-base sm:text-lg font-serif font-bold text-[#f3e3a2]">
+                {currentStreak} <span className="text-xs font-sans text-neutral-400 font-normal">{currentStreak === 1 ? (language === 'en' ? 'day' : 'dia') : (language === 'en' ? 'days' : 'dias')}</span>
+              </p>
+            </div>
 
-        <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
-            <Flame className="w-3.5 h-3.5 text-amber-500" />
-            <span>Sequência Ativa</span>
+            <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
+                <Award className="w-3.5 h-3.5 text-purple-400" />
+                <span>{language === 'en' ? 'Average per Session' : 'Média por Sessão'}</span>
+              </div>
+              <p className="text-base sm:text-lg font-serif font-bold text-white">
+                {avgMinutesPerDay} <span className="text-xs font-sans text-purple-300 font-normal">min</span>
+              </p>
+            </div>
           </div>
-          <p className="text-base sm:text-lg font-serif font-bold text-[#f3e3a2]">
-            {currentStreak} <span className="text-xs font-sans text-neutral-400 font-normal">{currentStreak === 1 ? 'dia' : 'dias'}</span>
-          </p>
-        </div>
 
-        <div className="p-3 bg-[#07090e] border border-[#c5a059]/20 rounded-lg space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
-            <Award className="w-3.5 h-3.5 text-purple-400" />
-            <span>Média por Sessão</span>
+          {/* Main Visual Recharts Chart */}
+          <div className="w-full h-56 sm:h-64 pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              {timeframe === 'giros' ? (
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="barGiroGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f3e3a2" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="#c5a059" stopOpacity={0.3} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 11 }}
+                    axisLine={{ stroke: '#334155' }}
+                  />
+                  <YAxis
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 10 }}
+                    axisLine={{ stroke: '#334155' }}
+                    allowDecimals={false}
+                  />
+                  <Tooltip content={<CustomTooltip language={language} />} />
+                  <Bar
+                    dataKey={metric}
+                    fill="url(#barGiroGrad)"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={36}
+                  />
+                </BarChart>
+              ) : (
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#c5a059" stopOpacity={0.6} />
+                      <stop offset="100%" stopColor="#c5a059" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 11 }}
+                    axisLine={{ stroke: '#334155' }}
+                  />
+                  <YAxis
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 10 }}
+                    axisLine={{ stroke: '#334155' }}
+                    allowDecimals={false}
+                  />
+                  <Tooltip content={<CustomTooltip language={language} />} />
+                  <Area
+                    type="monotone"
+                    dataKey={metric}
+                    stroke="#f3e3a2"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#areaGrad)"
+                    activeDot={{ r: 5, fill: '#f3e3a2', stroke: '#c5a059', strokeWidth: 2 }}
+                  />
+                </AreaChart>
+              )}
+            </ResponsiveContainer>
           </div>
-          <p className="text-base sm:text-lg font-serif font-bold text-white">
-            {avgMinutesPerDay} <span className="text-xs font-sans text-purple-300 font-normal">min</span>
-          </p>
-        </div>
-      </div>
 
-      {/* Main Visual Recharts Chart */}
-      <div className="w-full h-56 sm:h-64 pt-2">
-        <ResponsiveContainer width="100%" height="100%">
-          {timeframe === 'giros' ? (
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="barGiroGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f3e3a2" stopOpacity={0.9} />
-                  <stop offset="100%" stopColor="#c5a059" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-              <XAxis
-                dataKey="label"
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
-                axisLine={{ stroke: '#334155' }}
-              />
-              <YAxis
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 10 }}
-                axisLine={{ stroke: '#334155' }}
-                allowDecimals={false}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar
-                dataKey={metric}
-                fill="url(#barGiroGrad)"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={36}
-              />
-            </BarChart>
-          ) : (
-            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#c5a059" stopOpacity={0.6} />
-                  <stop offset="100%" stopColor="#c5a059" stopOpacity={0.0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-              <XAxis
-                dataKey="label"
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
-                axisLine={{ stroke: '#334155' }}
-              />
-              <YAxis
-                stroke="#64748b"
-                tick={{ fill: '#94a3b8', fontSize: 10 }}
-                axisLine={{ stroke: '#334155' }}
-                allowDecimals={false}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Area
-                type="monotone"
-                dataKey={metric}
-                stroke="#f3e3a2"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#areaGrad)"
-                activeDot={{ r: 5, fill: '#f3e3a2', stroke: '#c5a059', strokeWidth: 2 }}
-              />
-            </AreaChart>
+          {practiceLogs.length === 0 && (
+            <p className="text-[11px] text-neutral-400 text-center italic pt-1 font-serif">
+              {language === 'en'
+                ? 'Your completed sessions will appear here automatically as you practice.'
+                : 'Suas sessões concluídas aparecerão aqui automaticamente conforme você praticar.'}
+            </p>
           )}
-        </ResponsiveContainer>
-      </div>
-
-      {practiceLogs.length === 0 && (
-        <p className="text-[11px] text-neutral-400 text-center italic pt-1 font-serif">
-          Suas sessões concluídas aparecerão aqui automaticamente conforme você praticar.
-        </p>
+        </div>
       )}
     </div>
   );
 };
+

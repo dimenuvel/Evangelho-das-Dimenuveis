@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { PraticaDeHoje } from './PraticaDeHoje';
 import { CiclosDePratica } from './CiclosDePratica';
 import { getGiroById, GIROS_DATA } from '../data/girosData';
 import { getRandomHumorousQuote, HumorousQuote } from '../data/humorousQuotes';
-import { Compass, Flame, Sparkles, BookOpen, ArrowRight, Quote, RefreshCw, Sun, Sunrise, Moon, User, CheckCircle2, Play } from 'lucide-react';
+import { Compass, Sparkles, BookOpen, ArrowRight, Quote, RefreshCw, Sun, Sunrise, Moon, User, CheckCircle2, Play, Waves } from 'lucide-react';
 import { GalaxySpiral } from './GalaxySpiral';
+import { getTranslatedGiro, getTranslatedQuote } from '../utils/dataI18n';
 
 export const HomeScreen: React.FC = () => {
   const {
@@ -15,12 +16,16 @@ export const HomeScreen: React.FC = () => {
     activeProfile,
     completedPractices,
     completedGiros,
-    openProfileModal
+    openProfileModal,
+    t,
+    language
   } = useApp();
 
   const [quote, setQuote] = useState<HumorousQuote>(getRandomHumorousQuote);
 
-  const activeGiro = getGiroById(activeGiroId);
+  const rawGiro = getGiroById(activeGiroId);
+  const activeGiro = rawGiro ? getTranslatedGiro(rawGiro, language) : null;
+  const translatedQuote = getTranslatedQuote(quote, language);
 
   const handleNewQuote = () => {
     setQuote(getRandomHumorousQuote());
@@ -30,16 +35,16 @@ export const HomeScreen: React.FC = () => {
   const getGreetingData = () => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) {
-      return { text: 'Bom dia', icon: <Sunrise className="w-5 h-5 text-amber-300" /> };
+      return { text: t('home.greeting.morning'), icon: <Sunrise className="w-5 h-5 text-amber-300" /> };
     }
     if (hour >= 12 && hour < 18) {
-      return { text: 'Boa tarde', icon: <Sun className="w-5 h-5 text-amber-400" /> };
+      return { text: t('home.greeting.afternoon'), icon: <Sun className="w-5 h-5 text-amber-400" /> };
     }
-    return { text: 'Boa noite', icon: <Moon className="w-5 h-5 text-indigo-300" /> };
+    return { text: t('home.greeting.evening'), icon: <Moon className="w-5 h-5 text-indigo-300" /> };
   };
 
   const greeting = getGreetingData();
-  const userName = activeProfile?.name || 'Praticante';
+  const userName = activeProfile?.name || (language === 'en' ? 'Practitioner' : 'Praticante');
   const totalPracticesCount = GIROS_DATA.reduce((acc, g) => acc + g.practices.length, 0);
   const hasStarted = completedPractices.length > 0;
 
@@ -56,14 +61,13 @@ export const HomeScreen: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <p className="text-xs sm:text-sm font-serif italic text-[#c5a059] tracking-wider max-w-lg mx-auto">
-            "O LIVRO TRANSMITE. O APP PRATICA. O TARÔ REFLETE. A ESPIRAL CONDUZ."
+          <p className="text-xs sm:text-sm font-serif italic text-[#c5a059] tracking-wider max-w-lg mx-auto uppercase">
+            {t('home.heroTag')}
           </p>
         </div>
 
         <p className="text-xs text-neutral-400 max-w-xl mx-auto leading-relaxed pt-1">
-          Companheiro prático do <strong className="text-neutral-200">Evangelho das Dimenúveis</strong>.
-          Percorra os Dez Giros da Espiral com presença, contemplação e serenidade hermética.
+          {t('home.heroDesc')}
         </p>
 
         {/* Personalized Time-of-Day Greeting & User Progress Card */}
@@ -79,9 +83,9 @@ export const HomeScreen: React.FC = () => {
                     <span>{greeting.text}, {userName}!</span>
                   </h2>
                   <p className="text-[11px] text-neutral-400 font-mono">
-                    {activeProfile?.age ? `${activeProfile.age} anos • ` : ''}
+                    {activeProfile?.age ? `${activeProfile.age} ${language === 'en' ? 'years' : 'anos'} • ` : ''}
                     {activeProfile?.sex ? `${activeProfile.sex} • ` : ''}
-                    Praticante da Espiral
+                    {t('home.greeting.role')}
                   </p>
                 </div>
               </div>
@@ -92,7 +96,7 @@ export const HomeScreen: React.FC = () => {
                 title="Trocar ou gerenciar praticantes"
               >
                 <User className="w-3.5 h-3.5 text-[#c5a059]" />
-                <span>Perfil</span>
+                <span>{t('home.greeting.profileBtn')}</span>
               </button>
             </div>
 
@@ -101,17 +105,17 @@ export const HomeScreen: React.FC = () => {
               <div className="p-3.5 rounded-lg bg-[#07090e] border border-amber-500/30 space-y-2">
                 <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-wider">
                   <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Sua Jornada Começa Agora</span>
+                  <span>{t('home.journeyBegin.title')}</span>
                 </div>
                 <p className="text-xs text-neutral-300 leading-relaxed">
-                  Sua caminhada na Espiral está prestes a iniciar. Dedique alguns minutos para realizar sua primeira prática no <strong className="text-[#f3e3a2]">Giro I ({activeGiro?.title})</strong> e desperte sua percepção no Padrão.
+                  {t('home.journeyBegin.desc1')} <strong className="text-[#f3e3a2]">{activeGiro?.numberRoman} ({activeGiro?.title})</strong> {t('home.journeyBegin.desc2')}
                 </p>
                 <button
                   onClick={() => navigateTo('espiral')}
                   className="mt-1 px-4 py-2 rounded bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all"
                 >
                   <Play className="w-3.5 h-3.5 fill-black" />
-                  <span>Iniciar Primeira Prática</span>
+                  <span>{t('home.journeyBegin.btn')}</span>
                 </button>
               </div>
             ) : (
@@ -119,7 +123,7 @@ export const HomeScreen: React.FC = () => {
                 <div className="flex items-center justify-between text-xs font-bold text-[#c5a059] uppercase tracking-wider">
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Progresso do Praticante</span>
+                    <span>{t('home.progress.title')}</span>
                   </span>
                   <span className="text-amber-200 font-mono text-[11px]">
                     {completedPractices.length}/{totalPracticesCount}
@@ -134,7 +138,7 @@ export const HomeScreen: React.FC = () => {
                 </div>
 
                 <p className="text-xs text-neutral-300 leading-relaxed pt-0.5">
-                  Você já completou <strong className="text-white">{completedPractices.length} práticas</strong> e <strong className="text-white">{completedGiros.length} de 10 Giros</strong>. Posição atual: <strong className="text-[#f3e3a2]">{activeGiro?.numberRoman} — {activeGiro?.title}</strong>.
+                  {t('home.progress.completed')} <strong className="text-white">{completedPractices.length} {t('home.progress.practices')}</strong> {t('home.progress.and')} <strong className="text-white">{completedGiros.length} {t('home.progress.of')}</strong> <strong className="text-[#f3e3a2]">{activeGiro?.numberRoman} — {activeGiro?.title}</strong>.
                 </p>
               </div>
             )}
@@ -147,7 +151,7 @@ export const HomeScreen: React.FC = () => {
             <div className="flex items-center justify-between text-[#c5a059]/70 text-[10px] uppercase font-mono tracking-widest pb-1 border-b border-[#c5a059]/15">
               <span className="flex items-center gap-1">
                 <Quote className="w-3 h-3 text-[#f3e3a2]" />
-                <span>Citação do Evangelho</span>
+                <span>{t('home.quote.title')}</span>
               </span>
               <button
                 onClick={handleNewQuote}
@@ -156,17 +160,17 @@ export const HomeScreen: React.FC = () => {
                 id="refresh-quote-button"
               >
                 <RefreshCw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
-                <span className="hidden sm:inline">Outra</span>
+                <span>{t('home.quote.another')}</span>
               </button>
             </div>
 
             <p className="text-xs sm:text-sm font-serif italic text-amber-100/90 leading-relaxed px-2">
-              "{quote.text}"
+              "{translatedQuote.text}"
             </p>
 
-            {quote.source && (
+            {translatedQuote.source && (
               <p className="text-[10px] font-mono text-[#c5a059]/80 uppercase tracking-wider pt-0.5">
-                — {quote.source}
+                — {translatedQuote.source}
               </p>
             )}
           </div>
@@ -183,13 +187,13 @@ export const HomeScreen: React.FC = () => {
         <CiclosDePratica />
       </div>
 
-      {/* Quick Access Grid: 3 DESTINATIONS */}
+      {/* Quick Access Grid: 4 DESTINATIONS */}
       <div className="space-y-4">
         <h3 className="text-xs uppercase tracking-widest font-bold text-[#c5a059] flex items-center gap-2">
-          <span>TRÊS CAMINHOS DA ESPIRAL</span>
+          <span>{t('home.paths.title')}</span>
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* Destination 1: A ESPIRAL & PRÁTICAS */}
           <div
             onClick={() => navigateTo('espiral')}
@@ -203,25 +207,56 @@ export const HomeScreen: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-[#c5a059] block">
-                    GIRO ATUAL: {activeGiro?.numberRoman || 'I'}
+                    {t('home.paths.espiral.tag')}: {activeGiro?.numberRoman || 'I'}
                   </span>
                   <h4 className="font-serif font-bold text-base text-white mt-0.5 group-hover:text-[#f3e3a2]">
-                    🌀 A Espiral & Práticas
+                    {t('home.paths.espiral.title')}
                   </h4>
                 </div>
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Prática meditativa do dia e a jornada encadeada dos 10 Giros contemplativos.
+                {t('home.paths.espiral.desc')}
               </p>
             </div>
 
             <div className="pt-4 text-xs font-semibold text-[#c5a059] flex items-center justify-between border-t border-neutral-800 mt-4">
-              <span>Iniciar & Ver Giros</span>
+              <span>{t('home.paths.espiral.btn')}</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Destination 2: ORÁCULO */}
+          {/* Destination 2: LABORATÓRIO DE SOM */}
+          <div
+            onClick={() => navigateTo('som')}
+            id="dest-som-button"
+            className="bg-[#0b0f19] border border-amber-500/30 hover:border-amber-400 p-5 rounded-lg cursor-pointer hover:bg-[#111728] transition-all group shadow-lg flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-md bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 group-hover:scale-110 transition-transform shrink-0">
+                  <Waves className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400 block">
+                    {t('home.paths.som.tag')}
+                  </span>
+                  <h4 className="font-serif font-bold text-base text-white mt-0.5 group-hover:text-amber-200">
+                    {t('home.paths.som.title')}
+                  </h4>
+                </div>
+              </div>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                {t('home.paths.som.desc')}
+              </p>
+            </div>
+
+            <div className="pt-4 text-xs font-semibold text-amber-300 flex items-center justify-between border-t border-neutral-800 mt-4">
+              <span>{t('home.paths.som.btn')}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Destination 3: ORÁCULO */}
           <div
             onClick={() => navigateTo('oraculo')}
             id="dest-oraculo-button"
@@ -234,25 +269,25 @@ export const HomeScreen: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-purple-400 block">
-                    CONTEMPLAÇÃO
+                    {t('home.paths.oraculo.tag')}
                   </span>
                   <h4 className="font-serif font-bold text-base text-white mt-0.5 group-hover:text-purple-200">
-                    🔮 Oráculo
+                    {t('home.paths.oraculo.title')}
                   </h4>
                 </div>
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Consulte os 22 Arcanos Maiores para uma reflexão de 3 cartas alinhada ao seu Giro.
+                {t('home.paths.oraculo.desc')}
               </p>
             </div>
 
             <div className="pt-4 text-xs font-semibold text-purple-300 flex items-center justify-between border-t border-neutral-800 mt-4">
-              <span>Consultar Tarô</span>
+              <span>{t('home.paths.oraculo.btn')}</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Destination 3: EVANGELHO */}
+          {/* Destination 4: EVANGELHO */}
           <div
             onClick={() => navigateTo('evangelho')}
             id="dest-evangelho-button"
@@ -265,20 +300,20 @@ export const HomeScreen: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-blue-400 block">
-                    TRANSMISSÃO
+                    {t('home.paths.evangelho.tag')}
                   </span>
                   <h4 className="font-serif font-bold text-base text-white mt-0.5 group-hover:text-blue-200">
-                    📖 Evangelho
+                    {t('home.paths.evangelho.title')}
                   </h4>
                 </div>
               </div>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Leia a transmissão integral do Evangelho das Dimenúveis, Salmos e Capítulos.
+                {t('home.paths.evangelho.desc')}
               </p>
             </div>
 
             <div className="pt-4 text-xs font-semibold text-blue-300 flex items-center justify-between border-t border-neutral-800 mt-4">
-              <span>Abrir Leitor</span>
+              <span>{t('home.paths.evangelho.btn')}</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
@@ -287,3 +322,4 @@ export const HomeScreen: React.FC = () => {
     </div>
   );
 };
+

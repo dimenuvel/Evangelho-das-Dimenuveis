@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type NavigationTab = 'home' | 'espiral' | 'pratica_hoje' | 'oraculo' | 'evangelho';
+export type NavigationTab = 'home' | 'espiral' | 'pratica_hoje' | 'oraculo' | 'evangelho' | 'som';
 
 export type GiroState = 'BLOQUEADO' | 'EM PRÁTICA' | 'CONCLUÍDO';
 

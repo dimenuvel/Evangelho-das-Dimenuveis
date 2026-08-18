@@ -1,20 +1,21 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { NavigationTab } from '../types';
-import { Sparkles, Compass, Flame, BookOpen, Disc, HelpCircle, Image as ImageIcon, Sun, Moon } from 'lucide-react';
+import { Sparkles, Compass, Flame, BookOpen, Disc, HelpCircle, Image as ImageIcon, Sun, Moon, Waves } from 'lucide-react';
 import { SpiralIcon } from './SpiralIcon';
 import { motion } from 'motion/react';
 
 export const Navigation: React.FC = () => {
-  const { currentTab, navigateTo, activeGiroId, openTour, isTourOpen, isSplashOpen, theme, toggleTheme } = useApp();
+  const { currentTab, navigateTo, activeGiroId, openTour, isTourOpen, isSplashOpen, theme, toggleTheme, t, language } = useApp();
 
   if (isTourOpen || isSplashOpen) return null;
 
   const navItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'home', label: 'Início', icon: <Disc className="w-5 h-5" /> },
-    { id: 'espiral', label: 'A Espiral', icon: <Compass className="w-5 h-5" />, badge: `Giro ${activeGiroId}` },
-    { id: 'oraculo', label: 'Oráculo', icon: <Sparkles className="w-5 h-5 text-purple-300" /> },
-    { id: 'evangelho', label: 'Evangelho', icon: <BookOpen className="w-5 h-5 text-blue-300" /> },
+    { id: 'home', label: t('nav.home'), icon: <Disc className="w-5 h-5" /> },
+    { id: 'espiral', label: t('nav.espiral'), icon: <Compass className="w-5 h-5" />, badge: `${language === 'en' ? 'Turn' : 'Giro'} ${activeGiroId}` },
+    { id: 'som', label: t('nav.som'), icon: <Waves className="w-5 h-5 text-amber-300" /> },
+    { id: 'oraculo', label: t('nav.oraculo'), icon: <Sparkles className="w-5 h-5 text-purple-300" /> },
+    { id: 'evangelho', label: t('nav.evangelho'), icon: <BookOpen className="w-5 h-5 text-blue-300" /> },
   ];
 
   return (
@@ -32,7 +33,7 @@ export const Navigation: React.FC = () => {
               <SpiralIcon className="w-4 h-4 sm:w-5 sm:h-5 text-[#f3e3a2]" />
             </div>
             <span className="font-serif text-sm sm:text-base md:text-lg tracking-wider sm:tracking-widest text-[#f3e3a2] font-semibold whitespace-nowrap">
-              Evangelho das Dimenúveis
+              {language === 'en' ? 'Gospel of Dimenuous' : 'Evangelho das Dimenúveis'}
             </span>
           </button>
 

@@ -5,7 +5,6 @@ import {
   Sparkles,
   X,
   Plus,
-  Check,
   Trash2,
   AlertTriangle,
   Download,
@@ -30,7 +29,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
     switchProfile,
     deleteProfile,
     exportProfile,
-    importProfilesFromJSON
+    importProfilesFromJSON,
+    language
   } = useApp();
 
   const [name, setName] = useState<string>('');
@@ -56,7 +56,11 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setError('Por favor, informe seu nome para identificar seu progresso.');
+      setError(
+        language === 'en'
+          ? 'Please enter your name to identify your progress.'
+          : 'Por favor, informe seu nome para identificar seu progresso.'
+      );
       return;
     }
 
@@ -91,7 +95,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
     if (!file.name.endsWith('.json') && file.type !== 'application/json') {
       setImportFeedback({
         type: 'error',
-        message: 'Por favor, selecione um arquivo válido no formato JSON (.json).'
+        message:
+          language === 'en'
+            ? 'Please select a valid JSON file (.json).'
+            : 'Por favor, selecione um arquivo válido no formato JSON (.json).'
       });
       return;
     }
@@ -102,7 +109,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
       if (!content) {
         setImportFeedback({
           type: 'error',
-          message: 'O arquivo selecionado está vazio.'
+          message:
+            language === 'en'
+              ? 'The selected file is empty.'
+              : 'O arquivo selecionado está vazio.'
         });
         return;
       }
@@ -129,7 +139,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
     reader.onerror = () => {
       setImportFeedback({
         type: 'error',
-        message: 'Falha ao ler o arquivo selecionado.'
+        message:
+          language === 'en'
+            ? 'Failed to read the selected file.'
+            : 'Falha ao ler o arquivo selecionado.'
       });
     };
 
@@ -184,7 +197,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-[#c5a059]" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-[#c5a059]">
-              {showProfileList ? 'GERENCIAR PRATICANTES' : 'PERFIL DO PRATICANTE'}
+              {showProfileList
+                ? (language === 'en' ? 'MANAGE PRACTITIONERS' : 'GERENCIAR PRATICANTES')
+                : (language === 'en' ? 'PRACTITIONER PROFILE' : 'PERFIL DO PRATICANTE')}
             </h3>
           </div>
 
@@ -192,7 +207,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
             <button
               onClick={handleClose}
               className="p-1 rounded text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
-              title="Fechar"
+              title={language === 'en' ? 'Close' : 'Fechar'}
             >
               <X className="w-4 h-4" />
             </button>
@@ -215,7 +230,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
             )}
             <div className="space-y-0.5">
               <span className="font-bold block">
-                {importFeedback.type === 'success' ? 'Restauração Concluída' : 'Erro na Importação'}
+                {importFeedback.type === 'success'
+                  ? (language === 'en' ? 'Restoration Completed' : 'Restauração Concluída')
+                  : (language === 'en' ? 'Import Error' : 'Erro na Importação')}
               </span>
               <p className="text-[11px] leading-relaxed opacity-90">{importFeedback.message}</p>
             </div>
@@ -226,7 +243,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
         {showProfileList ? (
           <div className="space-y-4">
             <p className="text-xs text-neutral-300">
-              Selecione o praticante ativo, crie um novo perfil ou exporte seus backups para migrar entre dispositivos:
+              {language === 'en'
+                ? 'Select the active practitioner, create a new profile, or export your backups to migrate between devices:'
+                : 'Selecione o praticante ativo, crie um novo perfil ou exporte seus backups para migrar entre dispositivos:'}
             </p>
 
             <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -242,10 +261,16 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                     >
                       <div className="flex items-center gap-2 text-xs font-semibold text-red-300">
                         <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                        <span>Excluir perfil de "{p.name}"?</span>
+                        <span>
+                          {language === 'en'
+                            ? `Delete profile for "${p.name}"?`
+                            : `Excluir perfil de "${p.name}"?`}
+                        </span>
                       </div>
                       <p className="text-[11px] text-neutral-300 leading-relaxed">
-                        Todo o histórico de práticas e progresso na Espiral deste praticante será removido permanentemente.
+                        {language === 'en'
+                          ? 'All practice history and Spiral progress for this practitioner will be permanently removed.'
+                          : 'Todo o histórico de práticas e progresso na Espiral deste praticante será removido permanentemente.'}
                       </p>
                       <div className="flex items-center justify-end gap-2 pt-1">
                         <button
@@ -256,7 +281,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                           }}
                           className="px-3 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 text-xs font-medium transition-colors"
                         >
-                          Cancelar
+                          {language === 'en' ? 'Cancel' : 'Cancelar'}
                         </button>
                         <button
                           type="button"
@@ -264,7 +289,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                           className="px-3 py-1.5 rounded bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 shadow transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                          <span>Excluir Perfil</span>
+                          <span>{language === 'en' ? 'Delete Profile' : 'Excluir Perfil'}</span>
                         </button>
                       </div>
                     </div>
@@ -293,13 +318,18 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                           <span className="font-semibold text-sm text-white">{p.name}</span>
                           {isActive && (
                             <span className="text-[10px] font-mono uppercase bg-[#c5a059]/20 text-[#f3e3a2] px-2 py-0.5 rounded border border-[#c5a059]/40">
-                              Ativo
+                              {language === 'en' ? 'Active' : 'Ativo'}
                             </span>
                           )}
                         </div>
                         <p className="text-[11px] text-neutral-400">
-                          {p.completedPractices?.length || 0} práticas • {p.completedGiros?.length || 0} Giros
-                          {p.age ? ` • ${p.age} anos` : ''}
+                          {language === 'en'
+                            ? `${p.completedPractices?.length || 0} practices • ${p.completedGiros?.length || 0} Turns${
+                                p.age ? ` • ${p.age} years old` : ''
+                              }`
+                            : `${p.completedPractices?.length || 0} práticas • ${p.completedGiros?.length || 0} Giros${
+                                p.age ? ` • ${p.age} anos` : ''
+                              }`}
                         </p>
                       </div>
                     </div>
@@ -310,7 +340,11 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                         type="button"
                         onClick={(e) => handleExport(p.id, e)}
                         className="p-1.5 rounded-md text-neutral-400 hover:text-[#f3e3a2] hover:bg-[#c5a059]/20 transition-colors"
-                        title={`Exportar backup de ${p.name} (.json)`}
+                        title={
+                          language === 'en'
+                            ? `Export backup for ${p.name} (.json)`
+                            : `Exportar backup de ${p.name} (.json)`
+                        }
                         id={`export-profile-${p.id}`}
                       >
                         <Download className="w-4 h-4" />
@@ -324,7 +358,11 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                           setConfirmDeleteId(p.id);
                         }}
                         className="p-1.5 rounded-md text-neutral-400 hover:text-red-400 hover:bg-red-950/60 transition-colors"
-                        title={`Excluir perfil de ${p.name}`}
+                        title={
+                          language === 'en'
+                            ? `Delete profile for ${p.name}`
+                            : `Excluir perfil de ${p.name}`
+                        }
                         id={`delete-profile-${p.id}`}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -343,17 +381,21 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                 className="py-2.5 px-3 rounded-md bg-[#121826] hover:bg-neutral-800 border border-[#c5a059]/40 text-[#f3e3a2] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                <span>Novo Perfil</span>
+                <span>{language === 'en' ? 'New Profile' : 'Novo Perfil'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="py-2.5 px-3 rounded-md bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
-                title="Restaurar backup JSON do praticante"
+                title={
+                  language === 'en'
+                    ? 'Restore practitioner JSON backup'
+                    : 'Restaurar backup JSON do praticante'
+                }
               >
                 <Upload className="w-4 h-4 text-[#c5a059]" />
-                <span>Importar (.json)</span>
+                <span>{language === 'en' ? 'Import (.json)' : 'Importar (.json)'}</span>
               </button>
             </div>
           </div>
@@ -363,7 +405,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
                 <p className="text-xs text-neutral-300">
-                  Informe o nome do praticante para personalizar saudações e acompanhar a jornada individual na Espiral.
+                  {language === 'en'
+                    ? 'Enter the practitioner name to customize greetings and track individual progress in the Spiral.'
+                    : 'Informe o nome do praticante para personalizar saudações e acompanhar a jornada individual na Espiral.'}
                 </p>
               </div>
 
@@ -376,13 +420,18 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
               {/* Field: Name */}
               <div className="space-y-1">
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#c5a059]">
-                  Nome do Praticante <span className="text-red-400">*</span>
+                  {language === 'en' ? 'Practitioner Name' : 'Nome do Praticante'}{' '}
+                  <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Samuel, Maria, O Cara..."
+                  placeholder={
+                    language === 'en'
+                      ? 'E.g., Samuel, Maria, The Traveler...'
+                      : 'Ex: Samuel, Maria, O Cara...'
+                  }
                   className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
                   autoFocus
                 />
@@ -391,13 +440,16 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
               {/* Field: Age (Optional) */}
               <div className="space-y-1">
                 <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400">
-                  Idade <span className="text-neutral-500 font-normal lowercase">(opcional)</span>
+                  {language === 'en' ? 'Age' : 'Idade'}{' '}
+                  <span className="text-neutral-500 font-normal lowercase">
+                    {language === 'en' ? '(optional)' : '(opcional)'}
+                  </span>
                 </label>
                 <input
                   type="text"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  placeholder="Ex: 33"
+                  placeholder={language === 'en' ? 'E.g., 33' : 'Ex: 33'}
                   className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
                 />
               </div>
@@ -405,17 +457,28 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
               {/* Field: Sex/Gender (Optional) */}
               <div className="space-y-1">
                 <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400">
-                  Sexo / Gênero <span className="text-neutral-500 font-normal lowercase">(opcional)</span>
+                  {language === 'en' ? 'Sex / Gender' : 'Sexo / Gênero'}{' '}
+                  <span className="text-neutral-500 font-normal lowercase">
+                    {language === 'en' ? '(optional)' : '(opcional)'}
+                  </span>
                 </label>
                 <select
                   value={sex}
                   onChange={(e) => setSex(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-md bg-[#07090e] border border-neutral-800 focus:border-[#c5a059] text-white text-sm outline-none transition-colors"
                 >
-                  <option value="">Prefiro não informar</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Outro">Outro</option>
+                  <option value="">
+                    {language === 'en' ? 'Prefer not to say' : 'Prefiro não informar'}
+                  </option>
+                  <option value="Feminino">
+                    {language === 'en' ? 'Female' : 'Feminino'}
+                  </option>
+                  <option value="Masculino">
+                    {language === 'en' ? 'Male' : 'Masculino'}
+                  </option>
+                  <option value="Outro">
+                    {language === 'en' ? 'Other' : 'Outro'}
+                  </option>
                 </select>
               </div>
 
@@ -426,7 +489,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                     onClick={() => setIsCreatingNew(false)}
                     className="px-4 py-2.5 rounded-md bg-neutral-800 text-neutral-300 text-xs font-medium hover:bg-neutral-700 transition-colors"
                   >
-                    Voltar
+                    {language === 'en' ? 'Back' : 'Voltar'}
                   </button>
                 )}
 
@@ -435,7 +498,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                   className="px-6 py-2.5 rounded-md bg-gradient-to-r from-[#c5a059] to-[#e5c158] hover:from-[#d4af37] text-black font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[#c5a059]/20 transition-all"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Salvar Perfil</span>
+                  <span>{language === 'en' ? 'Save Profile' : 'Salvar Perfil'}</span>
                 </button>
               </div>
             </form>
@@ -444,10 +507,16 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
             <div className="border-t border-neutral-800 pt-4 space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-300">
                 <FileText className="w-4 h-4 text-[#c5a059]" />
-                <span>Já possui um perfil salvo?</span>
+                <span>
+                  {language === 'en'
+                    ? 'Already have a saved profile?'
+                    : 'Já possui um perfil salvo?'}
+                </span>
               </div>
               <p className="text-[11px] text-neutral-400 leading-relaxed">
-                Ao atualizar ou reinstalar o aplicativo, você pode restaurar seu histórico e progresso a partir de um arquivo de backup `.json`.
+                {language === 'en'
+                  ? 'When updating or reinstalling the app, you can restore your history and progress from a .json backup file.'
+                  : 'Ao atualizar ou reinstalar o aplicativo, você pode restaurar seu histórico e progresso a partir de um arquivo de backup .json.'}
               </p>
 
               {/* Drag and Drop Zone / File Input Trigger */}
@@ -466,10 +535,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
                   <Upload className="w-6 h-6 text-[#c5a059]" />
                   <div className="space-y-0.5">
                     <p className="text-xs font-bold text-[#f3e3a2]">
-                      Clique para selecionar ou arraste o arquivo .json
+                      {language === 'en'
+                        ? 'Click to select or drag and drop the .json file'
+                        : 'Clique para selecionar ou arraste o arquivo .json'}
                     </p>
                     <p className="text-[10px] text-neutral-500">
-                      Suporta arquivos de backup do Dimenúveis (*.json)
+                      {language === 'en'
+                        ? 'Supports Dimenuous backup files (*.json)'
+                        : 'Suporta arquivos de backup do Dimenúveis (*.json)'}
                     </p>
                   </div>
                 </div>

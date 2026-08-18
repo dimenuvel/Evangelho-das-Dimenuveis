@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useApp } from '../context/AppContext';
 import { TAROT_CARDS } from '../data/tarotData';
 import { getGiroById } from '../data/girosData';
+import { getTranslatedTarotCard, getTranslatedGiro } from '../utils/dataI18n';
 import { TarotCard, TarotReading } from '../types';
 import { TarotCardGraphic } from './TarotCardGraphic';
 import { Sparkles, RotateCcw, Eye, Compass, History, Layers, Clock, Lock } from 'lucide-react';
@@ -182,7 +183,7 @@ const GalaxySpiralGraphic: React.FC = () => {
 };
 
 export const OraculoTarot: React.FC = () => {
-  const { activeGiroId, saveTarotReading, tarotReadings } = useApp();
+  const { activeGiroId, saveTarotReading, tarotReadings, t, language } = useApp();
 
   const [currentReading, setCurrentReading] = useState<TarotReading | null>(null);
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
@@ -201,7 +202,8 @@ export const OraculoTarot: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const activeGiro = getGiroById(activeGiroId);
+  const rawGiro = getGiroById(activeGiroId);
+  const activeGiro = rawGiro ? getTranslatedGiro(rawGiro, language) : null;
 
   // Latest reading from history
   const latestReading = tarotReadings && tarotReadings.length > 0 ? tarotReadings[0] : null;
@@ -273,13 +275,16 @@ export const OraculoTarot: React.FC = () => {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c5a059]/10 border border-[#c5a059]/30 text-[#f3e3a2] text-xs font-bold tracking-widest uppercase">
           <Sparkles className="w-4 h-4 text-[#c5a059]" />
-          <span>ORÁCULO CONTEMPLATIVO</span>
+          <span>{language === 'en' ? 'CONTEMPLATIVE ORACLE' : 'ORÁCULO CONTEMPLATIVO'}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white tracking-wide">
-          O Tarô das Dimenúveis
+          {language === 'en' ? 'The Tarot of Dimenuous' : 'O Tarô das Dimenúveis'}
         </h1>
         <p className="text-sm text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          "O baralho não adivinha acontecimentos futuros; ele reflete exclusivamente sua presença no momento presente. O Tarô reflete o Agora, a Espiral conduz."
+          {language === 'en'
+            ? '"The deck does not predict future events; it exclusively reflects your presence in the current moment. Tarot reflects the Now, the Spiral leads."'
+            : '"O baralho não adivinha acontecimentos futuros; ele reflete exclusivamente sua presença no momento presente. O Tarô reflete o Agora, a Espiral conduz."'
+          }
         </p>
 
         {/* View Switcher: Oráculo vs Galeria do Baralho */}
@@ -293,7 +298,7 @@ export const OraculoTarot: React.FC = () => {
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Tiragem de 3 Cartas</span>
+            <span>{language === 'en' ? '3-Card Spread' : 'Tiragem de 3 Cartas'}</span>
           </button>
 
           <button
@@ -305,7 +310,7 @@ export const OraculoTarot: React.FC = () => {
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>Baralho Completo ({TAROT_CARDS.length})</span>
+            <span>{language === 'en' ? 'Full Deck' : 'Baralho Completo'} ({TAROT_CARDS.length})</span>
           </button>
         </div>
       </div>
@@ -315,26 +320,32 @@ export const OraculoTarot: React.FC = () => {
         <div className="space-y-6">
           <div className="bg-[#0b0f19] border border-[#c5a059]/30 rounded-lg p-4 sm:p-6 text-center space-y-2">
             <h3 className="font-serif font-bold text-xl text-[#f3e3a2]">
-              Os Arcanos Maiores & A Carta Secreta
+              {language === 'en' ? 'Major Arcana & The Secret Card' : 'Os Arcanos Maiores & A Carta Secreta'}
             </h3>
             <p className="text-xs text-neutral-300 max-w-lg mx-auto">
-              Clique em qualquer carta para virar e contemplar sua iconografia clássica, significados profundos da presença atual e conexões com a Espiral.
+              {language === 'en'
+                ? 'Click on any card to flip and contemplate its classical iconography, deep meanings of present awareness, and connections to the Spiral.'
+                : 'Clique em qualquer carta para virar e contemplar sua iconografia clássica, significados profundos da presença atual e conexões com a Espiral.'
+              }
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-items-center">
-            {TAROT_CARDS.map((card) => (
-              <div
-                key={card.id}
-                onClick={() => setSelectedCardForModal({ card, positionTitle: `ARCANO ${card.number}` })}
-                className="flex flex-col items-center group cursor-pointer"
-              >
-                <TarotCardGraphic card={card} size="sm" interactiveFlip={false} />
-                <span className="text-[11px] font-serif font-bold text-neutral-300 mt-2 group-hover:text-[#f3e3a2] transition-colors text-center truncate max-w-[130px]">
-                  {card.number} — {card.name}
-                </span>
-              </div>
-            ))}
+            {TAROT_CARDS.map((rawCard) => {
+              const card = getTranslatedTarotCard(rawCard, language);
+              return (
+                <div
+                  key={card.id}
+                  onClick={() => setSelectedCardForModal({ card, positionTitle: language === 'en' ? `ARCANA ${card.number}` : `ARCANO ${card.number}` })}
+                  className="flex flex-col items-center group cursor-pointer"
+                >
+                  <TarotCardGraphic card={card} size="sm" interactiveFlip={false} />
+                  <span className="text-[11px] font-serif font-bold text-neutral-300 mt-2 group-hover:text-[#f3e3a2] transition-colors text-center truncate max-w-[130px]">
+                    {card.number} — {card.name}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       ) : (
@@ -362,10 +373,10 @@ export const OraculoTarot: React.FC = () => {
                   className="mt-6 space-y-2 text-center"
                 >
                   <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#f3e3a2] tracking-[0.2em] uppercase drop-shadow-[0_0_15px_rgba(243,227,162,0.4)]">
-                    MENSAGEM DA ESPIRAL
+                    {language === 'en' ? 'MESSAGE FROM THE SPIRAL' : 'MENSAGEM DA ESPIRAL'}
                   </h2>
                   <p className="text-xs text-neutral-300 font-serif italic max-w-sm mx-auto animate-pulse">
-                    Sintonizando a presença no momento presente...
+                    {language === 'en' ? 'Tuning into presence in the current moment...' : 'Sintonizando a presença no momento presente...'}
                   </p>
                 </motion.div>
               </div>
@@ -381,7 +392,7 @@ export const OraculoTarot: React.FC = () => {
                     <div className="text-center space-y-1">
                       <span className="text-xl sm:text-2xl">🔮</span>
                       <span className="text-[9px] sm:text-[10px] font-serif font-bold text-[#c5a059] block tracking-widest">
-                        TARÔ
+                        {language === 'en' ? 'TAROT' : 'TARÔ'}
                       </span>
                     </div>
                   </div>
@@ -390,10 +401,13 @@ export const OraculoTarot: React.FC = () => {
 
               <div className="space-y-2 max-w-lg mx-auto">
                 <h3 className="font-serif text-2xl font-bold text-[#f3e3a2]">
-                  Tiragem de Três Cartas de Presença
+                  {language === 'en' ? 'Three-Card Spread of Presence' : 'Tiragem de Três Cartas de Presença'}
                 </h3>
                 <p className="text-xs text-neutral-300 leading-relaxed">
-                  Consulte as cartas para reconhecer sua presença no momento presente, a sombra esquecida do agora e aquilo que já está manifestado na sua consciência.
+                  {language === 'en'
+                    ? 'Consult the cards to recognize your presence in the current moment, the forgotten shadow of now, and that which is already manifested in your awareness.'
+                    : 'Consulte as cartas para reconhecer sua presença no momento presente, a sombra esquecida do agora e aquilo que já está manifestado na sua consciência.'
+                  }
                 </p>
               </div>
 
@@ -401,13 +415,16 @@ export const OraculoTarot: React.FC = () => {
                 <div className="max-w-md mx-auto p-3.5 bg-[#1c130b] border border-[#c5a059]/40 rounded-lg text-xs text-[#f3e3a2] space-y-1.5 text-center">
                   <div className="flex items-center justify-center gap-1.5 font-bold text-amber-400">
                     <Clock className="w-4 h-4 shrink-0" />
-                    <span>LIMITADO A 1 CONSULTA POR HORA</span>
+                    <span>{language === 'en' ? 'LIMITED TO 1 CONSULTATION PER HOUR' : 'LIMITADO A 1 CONSULTA POR HORA'}</span>
                   </div>
                   <p className="text-neutral-300 text-[11px] leading-relaxed">
-                    Para promover a contemplação profunda da presença atual e evitar ansiedade de adivinhação do futuro, novas tiragens são permitidas a cada 60 minutos.
+                    {language === 'en'
+                      ? 'To foster deep contemplation of present awareness and prevent future prediction anxiety, new spreads are allowed every 60 minutes.'
+                      : 'Para promover a contemplação profunda da presença atual e evitar ansiedade de adivinhação do futuro, novas tiragens são permitidas a cada 60 minutos.'
+                    }
                   </p>
                   <p className="font-mono text-amber-300 font-bold pt-1 text-xs">
-                    Próxima tiragem disponível em: {formatCooldown(cooldownRemainingMs)}
+                    {language === 'en' ? 'Next spread available in:' : 'Próxima tiragem disponível em:'} {formatCooldown(cooldownRemainingMs)}
                   </p>
                 </div>
               )}
@@ -425,17 +442,17 @@ export const OraculoTarot: React.FC = () => {
                 {isCooldownActive ? (
                   <>
                     <Lock className="w-4 h-4 text-amber-400" />
-                    <span>INDISPONÍVEL ({formatCooldown(cooldownRemainingMs)})</span>
+                    <span>{language === 'en' ? 'UNAVAILABLE' : 'INDISPONÍVEL'} ({formatCooldown(cooldownRemainingMs)})</span>
                   </>
                 ) : isFlipping ? (
                   <>
                     <Sparkles className="w-4 h-4 fill-current animate-spin" />
-                    <span>EMBARALHANDO O BARALHO...</span>
+                    <span>{language === 'en' ? 'SHUFFLING THE DECK...' : 'EMBARALHANDO O BARALHO...'}</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 fill-current" />
-                    <span>CONSULTAR O ORÁCULO</span>
+                    <span>{language === 'en' ? 'CONSULT THE ORACLE' : 'CONSULTAR O ORÁCULO'}</span>
                   </>
                 )}
               </button>
@@ -448,49 +465,63 @@ export const OraculoTarot: React.FC = () => {
                   <div className="flex items-center gap-2 text-[#f3e3a2]">
                     <Clock className="w-4 h-4 text-[#c5a059] shrink-0" />
                     <span>
-                      <strong>Leitura Ativa da Presença Atual:</strong> Novas tiragens são permitidas a cada 1 hora para cultivar a contemplação do Agora.
+                      {language === 'en' ? (
+                        <><strong>Active Presence Reading:</strong> New spreads are allowed every 1 hour to cultivate contemplation of the Now.</>
+                      ) : (
+                        <><strong>Leitura Ativa da Presença Atual:</strong> Novas tiragens são permitidas a cada 1 hora para cultivar a contemplação do Agora.</>
+                      )}
                     </span>
                   </div>
                   <span className="font-mono font-bold text-amber-300 bg-[#c5a059]/10 px-3 py-1 rounded border border-[#c5a059]/30 shrink-0">
-                    Próxima em: {formatCooldown(cooldownRemainingMs)}
+                    {language === 'en' ? 'Next in:' : 'Próxima em:'} {formatCooldown(cooldownRemainingMs)}
                   </span>
                 </div>
               )}
 
               {/* Cards Display Grid with Graphic Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center">
-                {currentReading.cards.map((item, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => setSelectedCardForModal({ card: item.card, positionTitle: item.positionTitle })}
-                    className="w-full bg-[#0b0f19] border border-[#c5a059]/30 hover:border-[#c5a059] rounded-lg p-5 space-y-4 cursor-pointer hover:bg-[#0f1524] transition-all group shadow-xl flex flex-col items-center text-center relative overflow-hidden"
-                  >
-                    {/* Position Title */}
-                    <div className="w-full border-b border-neutral-800 pb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-[#c5a059] block">
-                        {item.positionTitle}
-                      </span>
-                    </div>
+                {currentReading.cards.map((item, idx) => {
+                  const card = getTranslatedTarotCard(item.card, language);
+                  let posTitle = item.positionTitle;
+                  if (language === 'en') {
+                    if (item.position === 'onde_estou') posTitle = '1. PRESENT AWARENESS (WHERE I AM NOW)';
+                    else if (item.position === 'oque_esquecendo') posTitle = '2. SHADOW OF PRESENCE (WHAT I FORGET NOW)';
+                    else if (item.position === 'oque_ja_aqui') posTitle = '3. ANCHORING IN THE NOW (WHAT IS ALREADY PRESENT)';
+                  }
 
-                    {/* Fancy Graphical Tarot Card */}
-                    <div className="py-2 flex justify-center">
-                      <TarotCardGraphic card={item.card} size="md" interactiveFlip={false} />
-                    </div>
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => setSelectedCardForModal({ card, positionTitle: posTitle })}
+                      className="w-full bg-[#0b0f19] border border-[#c5a059]/30 hover:border-[#c5a059] rounded-lg p-5 space-y-4 cursor-pointer hover:bg-[#0f1524] transition-all group shadow-xl flex flex-col items-center text-center relative overflow-hidden"
+                    >
+                      {/* Position Title */}
+                      <div className="w-full border-b border-neutral-800 pb-2">
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-[#c5a059] block">
+                          {posTitle}
+                        </span>
+                      </div>
 
-                    {/* Tagline */}
-                    <p className="text-xs text-neutral-300 italic font-serif leading-relaxed px-2">
-                      "{item.card.tagline}"
-                    </p>
+                      {/* Fancy Graphical Tarot Card */}
+                      <div className="py-2 flex justify-center">
+                        <TarotCardGraphic card={card} size="md" interactiveFlip={false} />
+                      </div>
 
-                    {/* Click for Contemplation */}
-                    <div className="w-full pt-2 text-center border-t border-neutral-800/80">
-                      <span className="text-[11px] text-[#c5a059] group-hover:underline inline-flex items-center gap-1 font-medium">
-                        <Eye className="w-3.5 h-3.5" />
-                        Ver Contemplação Detalhada
-                      </span>
+                      {/* Tagline */}
+                      <p className="text-xs text-neutral-300 italic font-serif leading-relaxed px-2">
+                        "{card.tagline}"
+                      </p>
+
+                      {/* Click for Contemplation */}
+                      <div className="w-full pt-2 text-center border-t border-neutral-800/80">
+                        <span className="text-[11px] text-[#c5a059] group-hover:underline inline-flex items-center gap-1 font-medium">
+                          <Eye className="w-3.5 h-3.5" />
+                          {language === 'en' ? 'View Detailed Contemplation' : 'Ver Contemplação Detalhada'}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* REFLEXÃO DA ESPIRAL (Integrated Contemplative Suggestion) */}
@@ -499,26 +530,35 @@ export const OraculoTarot: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <Compass className="w-5 h-5 text-[#c5a059]" />
                     <h3 className="font-serif font-bold text-[#f3e3a2] text-lg">
-                      REFLEXÃO DA ESPIRAL
+                      {language === 'en' ? 'SPIRAL REFLECTION' : 'REFLEXÃO DA ESPIRAL'}
                     </h3>
                   </div>
 
                   <p className="text-xs text-neutral-300 italic font-serif">
-                    "Esta leitura pode ser contemplada em relação ao seu Giro atual ({activeGiro.numberRoman} — {activeGiro.title})."
+                    {language === 'en'
+                      ? `"This reading can be contemplated in relation to your current Turn (${activeGiro.numberRoman} — ${activeGiro.title})."`
+                      : `"Esta leitura pode ser contemplada em relação ao seu Giro atual (${activeGiro.numberRoman} — ${activeGiro.title})."`
+                    }
                   </p>
 
                   <div className="p-4 bg-[#07090e]/80 rounded-md border-l-2 border-[#c5a059] text-xs text-neutral-200 leading-relaxed space-y-2">
                     <p className="font-bold text-[#f3e3a2]">
-                      Contemplação da Presença no Giro {activeGiro.id} ({activeGiro.dimension}):
+                      {language === 'en'
+                        ? `Contemplation of Presence in Turn ${activeGiro.id} (${activeGiro.dimension}):`
+                        : `Contemplação da Presença no Giro ${activeGiro.id} (${activeGiro.dimension}):`
+                      }
                     </p>
                     <p>
-                      {currentReading.cards[0].card.giroReflection[activeGiro.id] ||
-                        currentReading.cards[0].card.reflection}
+                      {getTranslatedTarotCard(currentReading.cards[0].card, language).giroReflection?.[activeGiro.id] ||
+                        getTranslatedTarotCard(currentReading.cards[0].card, language).reflection}
                     </p>
                   </div>
 
                   <p className="text-[11px] text-neutral-400">
-                    Lembre-se: As cartas do Tarô das Dimenúveis são unicamente espelhos de observação contemplativa da presença atual. Elas não realizam adivinhações do futuro nem preveem eventos subsequentes.
+                    {language === 'en'
+                      ? 'Remember: The cards of the Tarot of Dimenuous are solely mirrors of contemplative observation of present awareness. They do not predict the future or foretell subsequent events.'
+                      : 'Lembre-se: As cartas do Tarô das Dimenúveis são unicamente espelhos de observação contemplativa da presença atual. Elas não realizam adivinhações do futuro nem preveem eventos subsequentes.'
+                    }
                   </p>
                 </div>
               )}
@@ -526,7 +566,11 @@ export const OraculoTarot: React.FC = () => {
               {/* Controls Bar - Tiragem de presença realizada em */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#0b0f19] border border-[#c5a059]/20 rounded-lg p-4">
                 <span className="text-xs text-neutral-400">
-                  Tiragem de presença realizada em <strong className="text-[#f3e3a2]">{currentReading.date}</strong>
+                  {language === 'en' ? (
+                    <>Presence spread conducted on <strong className="text-[#f3e3a2]">{currentReading.date}</strong></>
+                  ) : (
+                    <>Tiragem de presença realizada em <strong className="text-[#f3e3a2]">{currentReading.date}</strong></>
+                  )}
                 </span>
 
                 <button
@@ -537,17 +581,17 @@ export const OraculoTarot: React.FC = () => {
                       ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700'
                       : 'bg-[#121826] hover:bg-neutral-800 text-[#f3e3a2] border border-[#c5a059]/30'
                   }`}
-                  title={isCooldownActive ? `Próxima tiragem disponível em ${formatCooldown(cooldownRemainingMs)}` : 'Nova Tiragem'}
+                  title={isCooldownActive ? (language === 'en' ? `Next spread available in ${formatCooldown(cooldownRemainingMs)}` : `Próxima tiragem disponível em ${formatCooldown(cooldownRemainingMs)}`) : (language === 'en' ? 'New Spread' : 'Nova Tiragem')}
                 >
                   {isCooldownActive ? (
                     <>
                       <Lock className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Aguarde {formatCooldown(cooldownRemainingMs)}</span>
+                      <span>{language === 'en' ? 'Wait ' : 'Aguarde '}{formatCooldown(cooldownRemainingMs)}</span>
                     </>
                   ) : (
                     <>
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span>Nova Tiragem</span>
+                      <span>{language === 'en' ? 'New Spread' : 'Nova Tiragem'}</span>
                     </>
                   )}
                 </button>
@@ -558,82 +602,88 @@ export const OraculoTarot: React.FC = () => {
       )}
 
       {/* Card Detail Modal */}
-      {selectedCardForModal && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md overflow-y-auto p-3 sm:p-6"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setSelectedCardForModal(null);
-          }}
-        >
-          <div className="min-h-full flex items-start justify-center pt-2 sm:pt-6 pb-24">
-            <div className="bg-[#0b0f19] border border-[#c5a059]/50 rounded-xl p-6 sm:p-8 max-w-2xl w-full space-y-5 shadow-2xl relative">
+      {selectedCardForModal && (() => {
+        const modalCard = getTranslatedTarotCard(selectedCardForModal.card, language);
+        return (
+          <div
+            className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md overflow-y-auto p-3 sm:p-6"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedCardForModal(null);
+            }}
+          >
+            <div className="min-h-full flex items-start justify-center pt-2 sm:pt-6 pb-24">
+              <div className="bg-[#0b0f19] border border-[#c5a059]/50 rounded-xl p-6 sm:p-8 max-w-2xl w-full space-y-5 shadow-2xl relative">
+                <button
+                  onClick={() => setSelectedCardForModal(null)}
+                  className="absolute top-4 right-4 text-neutral-400 hover:text-white p-2 text-lg"
+                >
+                  ✕
+                </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+                {/* Graphic Card on left */}
+                <div className="sm:col-span-5 flex justify-center">
+                  <TarotCardGraphic card={modalCard} size="md" interactiveFlip={true} />
+                </div>
+
+                {/* Card textual information on right */}
+                <div className="sm:col-span-7 space-y-4 text-xs text-neutral-300">
+                  <div className="space-y-1">
+                    {selectedCardForModal.positionTitle && (
+                      <span className="text-[10px] uppercase tracking-widest text-[#c5a059] font-bold block">
+                        {selectedCardForModal.positionTitle}
+                      </span>
+                    )}
+                    <h3 className="text-2xl font-serif font-bold text-[#f3e3a2]">
+                      {modalCard.number} — {modalCard.name}
+                    </h3>
+                    <p className="text-xs text-[#c5a059] font-serif italic">
+                      {language === 'en' ? 'Dimenuous Layer:' : 'Dimenúvel:'} {modalCard.dimentionName}
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-[#121826] rounded-xl border border-neutral-800 space-y-1">
+                    <h4 className="font-bold text-[#f3e3a2]">{language === 'en' ? 'Arcana Description:' : 'Descrição do Arcano:'}</h4>
+                    <p className="leading-relaxed">{modalCard.description}</p>
+                  </div>
+
+                  <div className="p-3 bg-[#121826] rounded-xl border border-neutral-800 space-y-1">
+                    <h4 className="font-bold text-[#f3e3a2]">{language === 'en' ? 'Reflection in Present Awareness:' : 'Reflexão na Presença Atual:'}</h4>
+                    <p className="leading-relaxed">{modalCard.reflection}</p>
+                  </div>
+
+                  {activeGiro && modalCard.giroReflection[activeGiro.id] && (
+                    <div className="p-3 bg-[#07090e] rounded-xl border-l-2 border-[#c5a059] space-y-1">
+                      <h4 className="font-bold text-[#c5a059]">
+                        {language === 'en'
+                          ? `Relation to Turn ${activeGiro.id} (${activeGiro.title}):`
+                          : `Relação com Giro ${activeGiro.id} (${activeGiro.title}):`
+                        }
+                      </h4>
+                      <p className="leading-relaxed">{modalCard.giroReflection[activeGiro.id]}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <button
                 onClick={() => setSelectedCardForModal(null)}
-                className="absolute top-4 right-4 text-neutral-400 hover:text-white p-2 text-lg"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#e5c158] text-black font-bold text-xs uppercase tracking-wider hover:from-[#d4af37] transition-all"
               >
-                ✕
+                {language === 'en' ? 'I Abide' : 'Eu Abido'}
               </button>
-
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
-              {/* Graphic Card on left */}
-              <div className="sm:col-span-5 flex justify-center">
-                <TarotCardGraphic card={selectedCardForModal.card} size="md" interactiveFlip={true} />
-              </div>
-
-              {/* Card textual information on right */}
-              <div className="sm:col-span-7 space-y-4 text-xs text-neutral-300">
-                <div className="space-y-1">
-                  {selectedCardForModal.positionTitle && (
-                    <span className="text-[10px] uppercase tracking-widest text-[#c5a059] font-bold block">
-                      {selectedCardForModal.positionTitle}
-                    </span>
-                  )}
-                  <h3 className="text-2xl font-serif font-bold text-[#f3e3a2]">
-                    {selectedCardForModal.card.number} — {selectedCardForModal.card.name}
-                  </h3>
-                  <p className="text-xs text-[#c5a059] font-serif italic">
-                    Dimenúvel: {selectedCardForModal.card.dimentionName}
-                  </p>
-                </div>
-
-                <div className="p-3 bg-[#121826] rounded-xl border border-neutral-800 space-y-1">
-                  <h4 className="font-bold text-[#f3e3a2]">Descrição do Arcano:</h4>
-                  <p className="leading-relaxed">{selectedCardForModal.card.description}</p>
-                </div>
-
-                <div className="p-3 bg-[#121826] rounded-xl border border-neutral-800 space-y-1">
-                  <h4 className="font-bold text-[#f3e3a2]">Reflexão na Presença Atual:</h4>
-                  <p className="leading-relaxed">{selectedCardForModal.card.reflection}</p>
-                </div>
-
-                {activeGiro && selectedCardForModal.card.giroReflection[activeGiro.id] && (
-                  <div className="p-3 bg-[#07090e] rounded-xl border-l-2 border-[#c5a059] space-y-1">
-                    <h4 className="font-bold text-[#c5a059]">
-                      Relação com Giro {activeGiro.id} ({activeGiro.title}):
-                    </h4>
-                    <p className="leading-relaxed">{selectedCardForModal.card.giroReflection[activeGiro.id]}</p>
-                  </div>
-                )}
-              </div>
             </div>
-
-            <button
-              onClick={() => setSelectedCardForModal(null)}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#e5c158] text-black font-bold text-xs uppercase tracking-wider hover:from-[#d4af37] transition-all"
-            >
-              Eu Abido
-            </button>
           </div>
         </div>
-      </div>
-      )}
+        );
+      })()}
 
       {/* Historical Readings */}
       {tarotReadings.length > 0 && activeTabMode === 'oraculo' && (
         <div className="space-y-4 pt-6 border-t border-neutral-800">
           <h3 className="font-serif font-bold text-lg text-[#f3e3a2] flex items-center gap-2">
             <History className="w-4 h-4 text-[#c5a059]" />
-            <span>Histórico de Leituras de Presença</span>
+            <span>{language === 'en' ? 'History of Presence Readings' : 'Histórico de Leituras de Presença'}</span>
           </h3>
 
           <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
@@ -645,13 +695,14 @@ export const OraculoTarot: React.FC = () => {
               >
                 <div>
                   <span className="font-medium text-neutral-200">
-                    Tiragem de {reading.date}
+                    {language === 'en' ? `Spread of ${reading.date}` : `Tiragem de ${reading.date}`}
                   </span>
                   <span className="text-neutral-500 block text-[10px]">
-                    Cartas: {reading.cards.map((c) => c.card.name).join(' • ')}
+                    {language === 'en' ? 'Cards: ' : 'Cartas: '}
+                    {reading.cards.map((c) => getTranslatedTarotCard(c.card, language).name).join(' • ')}
                   </span>
                 </div>
-                <span className="text-[#c5a059] font-medium text-[11px]">Ver tiragem →</span>
+                <span className="text-[#c5a059] font-medium text-[11px]">{language === 'en' ? 'View spread →' : 'Ver tiragem →'}</span>
               </div>
             ))}
           </div>
