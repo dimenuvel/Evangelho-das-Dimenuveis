@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { TarotCard } from '../types';
-import tarotCardBackImg from '../assets/images/tarot_card_back_1786327772061.jpg';
-import tarotDeckArtImg from '../assets/images/tarot_deck_art_1786327783427.jpg';
 
 interface TarotCardGraphicProps {
   card: TarotCard;
